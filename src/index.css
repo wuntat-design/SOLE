@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0b50da;
+  --color-background-light: #f5f6f8;
+  --color-background-dark: #101622;
+  --font-family-display: "Inter", sans-serif;
+  --radius: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+  
+  /* MD3 Colors for Login Page */
+  --color-inverse-surface: #2d3133;
+  --color-surface-variant: #e0e3e5;
+  --color-on-primary: #ffffff;
+  --color-on-background: #191c1e;
+  --color-primary-container: #0052cc;
+  --color-on-primary-container: #c4d2ff;
+  --color-on-error: #ffffff;
+  --color-surface: #f7f9fb;
+  --color-on-surface: #191c1e;
+  --color-on-surface-variant: #434654;
+  --color-surface-dim: #d8dadc;
+  --color-outline: #737685;
+  --color-surface-container-high: #e6e8ea;
+  --color-surface-container-low: #f2f4f6;
+  --color-outline-variant: #c3c6d6;
+  --color-tertiary-container: #a33500;
+  --color-tertiary: #7b2600;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-secondary: #4c5d8d;
+  --color-error: #ba1a1a;
+  --color-surface-container: #eceef0;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-tint: #0c56d0;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.material-symbols-outlined.fill-1 {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
