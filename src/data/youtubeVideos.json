@@ -1,0 +1,137 @@
+[
+  {
+    "id": 1,
+    "title": "Coaching Clinic Pendaftaran PPG Guru Tertentu Pasca-Keberminatan",
+    "category": "PPG",
+    "categoryColor": "text-indigo-600 bg-indigo-100",
+    "youtubeId": "A2DTYJ4dDf0",
+    "date": "22 Agu 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 2,
+    "title": "Dari Guru Kelas, Siap Mengajar Bahasa Inggris",
+    "category": "Pedagogi",
+    "categoryColor": "text-amber-600 bg-amber-100",
+    "youtubeId": "Mx-umVtjghY",
+    "date": "20 Agu 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 3,
+    "title": "MERDEKA VERSI PEGAWAI BBGTK JATENG",
+    "category": "Inspirasi",
+    "categoryColor": "text-violet-600 bg-violet-100",
+    "youtubeId": "iK9jQCgQTmI",
+    "date": "20 Agu 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 4,
+    "title": "TANDUR 3 : Kompetensi Digital Dunia Pendidikan",
+    "category": "Teknologi",
+    "categoryColor": "text-primary bg-primary/10",
+    "youtubeId": "OajRyxBVaK8",
+    "date": "18 Agu 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 5,
+    "title": "Senam Anak Indonesia Hebat BBGTK Jateng",
+    "category": "Umum",
+    "categoryColor": "text-slate-600 bg-slate-100",
+    "youtubeId": "YI3AmfzVIv4",
+    "date": "11 Agu 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 6,
+    "title": "SEKAMPADI EPISODE 58 : STRATEGI JITU CIPTAKAN KELAS INTERAKTIF",
+    "category": "Umum",
+    "categoryColor": "text-slate-600 bg-slate-100",
+    "youtubeId": "HCUQFggdnmc",
+    "date": "11 Agu 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 7,
+    "title": "Program Kegiatan Laboratorium Pendidikan BBGTK Jateng",
+    "category": "Umum",
+    "categoryColor": "text-slate-600 bg-slate-100",
+    "youtubeId": "HjJmws0qCkM",
+    "date": "6 Agu 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 8,
+    "title": "KUNJUNGAN MENDIKDASMEN",
+    "category": "Umum",
+    "categoryColor": "text-slate-600 bg-slate-100",
+    "youtubeId": "EwBu2OPRaEQ",
+    "date": "6 Agu 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 9,
+    "title": "Pelatihan BERDIKARI (Berbudaya Edukatif, Reflektif, Disiplin, Kolaboratif, dan Inovatif)",
+    "category": "Umum",
+    "categoryColor": "text-slate-600 bg-slate-100",
+    "youtubeId": "LwVUK2Z49Ks",
+    "date": "6 Agu 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 10,
+    "title": "Pembukaan Pelatihan PM dan KKA berbasis Kelompok Kerja Provinsi Jawa Tengah",
+    "category": "Umum",
+    "categoryColor": "text-slate-600 bg-slate-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "31 Jul 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 11,
+    "title": "Coaching Clinic Pendaftaran Gemini Academy",
+    "category": "Umum",
+    "categoryColor": "text-slate-600 bg-slate-100",
+    "youtubeId": "C2xg_Whzcdk",
+    "date": "30 Jul 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 12,
+    "title": "Obor Deso Spesial Hari Anak 2026 :",
+    "category": "Umum",
+    "categoryColor": "text-slate-600 bg-slate-100",
+    "youtubeId": "vQicmc0tbyA",
+    "date": "29 Jul 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 13,
+    "title": "Sekampadi Episode 57 : Yuk Eksplorasi Ruang Murid untuk Proses Belajar Mengajarnya!",
+    "category": "Umum",
+    "categoryColor": "text-slate-600 bg-slate-100",
+    "youtubeId": "ejeqM-icI_U",
+    "date": "24 Jul 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 14,
+    "title": "Sosialisasi Pemanfaatan MOOC dan Galeri Media",
+    "category": "Umum",
+    "categoryColor": "text-slate-600 bg-slate-100",
+    "youtubeId": "m5aRstvKOLY",
+    "date": "22 Jul 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 15,
+    "title": "Kunjungan Belajar MKKS SMP Kab. Klaten",
+    "category": "Umum",
+    "categoryColor": "text-slate-600 bg-slate-100",
+    "youtubeId": "xXRktqcaQAA",
+    "date": "21 Jul 2026",
+    "views": "YouTube Video"
+  }
+]

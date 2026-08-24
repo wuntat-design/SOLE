@@ -1,32 +1,8 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-
-const webinars = [
-  {
-    id: 1,
-    title: 'Stop Asal Matiin PID, Biar Gak Cepat Ngambek!',
-    date: '2 Hari lalu',
-    youtubeId: '9PlwkttZkt0',
-  },
-  {
-    id: 2,
-    title: 'PROFIL BBGTK JAWA TENGAH',
-    date: '1 Minggu lalu',
-    youtubeId: 'Z2UtJTS-5J0',
-  },
-  {
-    id: 3,
-    title: 'WORKSHOP PEMBELAJARAN MENDALAM BAGI GURU BAHASA INGGRIS',
-    date: '2 Minggu lalu',
-    youtubeId: '-JQB3p66r4o',
-  },
-  {
-    id: 4,
-    title: 'Seri Inspirasi Pendidikan (SIP) : Program Inovasi Litnum SDN Kemasan 1 Surakarta',
-    date: '3 Minggu lalu',
-    youtubeId: 'dgpI6QR8gQQ',
-  },
-]
+import initialVideos from '../data/youtubeVideos.json'
+import { fetchYouTubeFeedFromRSS } from '../services/youtubeService'
 
 function WebinarCard({ webinar }) {
   const { isLoggedIn } = useAuth()
@@ -77,12 +53,46 @@ function WebinarCard({ webinar }) {
 }
 
 export default function WebinarSection() {
+  const [webinars, setWebinars] = useState(initialVideos.slice(0, 4))
+  const [isSyncing, setIsSyncing] = useState(false)
+  const [lastSynced, setLastSynced] = useState(null)
+
+  const handleSync = async () => {
+    setIsSyncing(true)
+    const freshVideos = await fetchYouTubeFeedFromRSS()
+    if (freshVideos && freshVideos.length > 0) {
+      setWebinars(freshVideos.slice(0, 4))
+      setLastSynced(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }))
+    }
+    setIsSyncing(false)
+  }
+
   return (
     <section className="max-w-7xl mx-auto px-4 md:px-10 lg:px-40 py-12">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
         <div>
-          <h2 className="text-slate-900 dark:text-slate-100 text-2xl md:text-3xl font-bold">Webinar Terbaru</h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">Update pengetahuan dari para ahli di bidang pendidikan</p>
+          <div className="flex items-center gap-3">
+            <h2 className="text-slate-900 dark:text-slate-100 text-2xl md:text-3xl font-bold">Webinar Terbaru</h2>
+            <button
+              onClick={handleSync}
+              disabled={isSyncing}
+              title="Sync data dari RSS Feed YouTube BBGTK"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400 hover:bg-red-500 hover:text-white transition-all cursor-pointer disabled:opacity-50"
+            >
+              <span className={`material-symbols-outlined text-sm ${isSyncing ? 'animate-spin' : ''}`}>
+                sync
+              </span>
+              {isSyncing ? 'Syncing RSS...' : 'Sync YouTube'}
+            </button>
+          </div>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm flex items-center gap-2">
+            Update pengetahuan dari para ahli di bidang pendidikan
+            {lastSynced && (
+              <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
+                ✓ Sync jam {lastSynced}
+              </span>
+            )}
+          </p>
         </div>
         <Link
           to="/webinar"
