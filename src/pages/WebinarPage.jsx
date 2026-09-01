@@ -92,7 +92,7 @@ export default function WebinarPage() {
               </label>
             </div>
             <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
-              {['Semua', 'PPG', 'Pedagogi', 'Teknologi', 'Inspirasi', 'Profil', 'Tutorial'].map((category) => (
+              {['Semua', 'Sekampadi', 'PPG', 'Pedagogi', 'Teknologi', 'Inspirasi', 'Profil', 'Tutorial'].map((category) => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}

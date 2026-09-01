@@ -3,6 +3,7 @@ import defaultVideos from '../data/youtubeVideos.json'
 const BBGTK_CHANNEL_ID = 'UCbNmhYhCjf-PI_YzLeBnGgQ'
 
 const categoryStyles = {
+  Sekampadi: 'text-amber-700 bg-amber-100',
   Teknologi: 'text-primary bg-primary/10',
   Profil: 'text-emerald-600 bg-emerald-100',
   Pedagogi: 'text-amber-600 bg-amber-100',
@@ -15,6 +16,7 @@ const categoryStyles = {
 
 function detectCategory(title) {
   const lower = title.toLowerCase()
+  if (lower.includes('sekampadi')) return 'Sekampadi'
   if (lower.includes('ppg')) return 'PPG'
   if (lower.includes('profil')) return 'Profil'
   if (lower.includes('tutorial') || lower.includes('lms')) return 'Tutorial'
