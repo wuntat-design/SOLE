@@ -12,6 +12,7 @@ import CheckEmailPage from './pages/CheckEmailPage.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
 import ModerationPage from './pages/ModerationPage.jsx'
 import UserManagementPage from './pages/UserManagementPage.jsx'
+import AdminDashboardPage from './pages/AdminDashboardPage.jsx'
 import { useAuth } from './context/AuthContext'
 import { Navigate } from 'react-router-dom'
 import Chatbot from './components/Chatbot.jsx'
@@ -19,6 +20,15 @@ import Chatbot from './components/Chatbot.jsx'
 function SuperAdminRoute({ children }) {
   const { user } = useAuth();
   if (user?.role !== 'superadmin') {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+}
+
+function AdminOrModeratorRoute({ children }) {
+  const { user } = useAuth();
+  const isStaff = user?.role === 'admin' || user?.role === 'superadmin' || user?.role === 'moderator';
+  if (!isStaff) {
     return <Navigate to="/" replace />;
   }
   return children;
@@ -40,7 +50,8 @@ function App() {
               <Route path="/best-practice" element={<BestPracticePage />} />
               <Route path="/best-practice/create" element={<CreateBestPracticePage />} />
               <Route path="/best-practice/:id" element={<BestPracticeDetailPage />} />
-              <Route path="/moderation" element={<ModerationPage />} />
+              <Route path="/moderation" element={<AdminOrModeratorRoute><ModerationPage /></AdminOrModeratorRoute>} />
+              <Route path="/admin/dashboard" element={<AdminOrModeratorRoute><AdminDashboardPage /></AdminOrModeratorRoute>} />
               <Route path="/profile" element={<UserProfilePage />} />
               <Route path="/settings" element={<SuperAdminRoute><UserManagementPage /></SuperAdminRoute>} />
             </Routes>

@@ -65,15 +65,24 @@ export default function DashboardLayout({ children }) {
               <span className={`text-sm ${path.startsWith('/best-practice') ? 'font-semibold' : 'font-medium'}`}>Best Practices</span>
             </Link>
             
-            {/* Moderation Link - Conditional on Role */}
-            {(userRole === 'admin' || userRole === 'superadmin') && (
-              <Link 
-                to="/moderation" 
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group ${path === '/moderation' ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
-              >
-                <span className={`material-symbols-outlined ${path === '/moderation' ? 'fill-1' : 'text-slate-500 group-hover:text-primary'}`} style={{ fontVariationSettings: path === '/moderation' ? "'FILL' 1" : undefined }}>security</span>
-                <span className={`text-sm ${path === '/moderation' ? 'font-semibold' : 'font-medium'}`}>Moderasi</span>
-              </Link>
+            {/* Dashboard Pengguna & Moderation Links - Restricted to Admin, Moderator, Super Admin */}
+            {(userRole === 'admin' || userRole === 'superadmin' || userRole === 'moderator') && (
+              <>
+                <Link 
+                  to="/admin/dashboard" 
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group ${path === '/admin/dashboard' ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+                >
+                  <span className={`material-symbols-outlined ${path === '/admin/dashboard' ? 'fill-1' : 'text-slate-500 group-hover:text-primary'}`}>admin_panel_settings</span>
+                  <span className={`text-sm ${path === '/admin/dashboard' ? 'font-semibold' : 'font-medium'}`}>Dashboard Pengguna</span>
+                </Link>
+                <Link 
+                  to="/moderation" 
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group ${path === '/moderation' ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+                >
+                  <span className={`material-symbols-outlined ${path === '/moderation' ? 'fill-1' : 'text-slate-500 group-hover:text-primary'}`} style={{ fontVariationSettings: path === '/moderation' ? "'FILL' 1" : undefined }}>security</span>
+                  <span className={`text-sm ${path === '/moderation' ? 'font-semibold' : 'font-medium'}`}>Moderasi</span>
+                </Link>
+              </>
             )}
             
             {isLoggedIn && (
@@ -131,7 +140,7 @@ export default function DashboardLayout({ children }) {
               <span className="material-symbols-outlined">{isSidebarOpen ? 'menu_open' : 'menu'}</span>
             </button>
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-              {path.startsWith('/settings') ? 'Admin Settings' : path.startsWith('/best-practice') ? 'Best Practice Gallery' : path === '/webinar' ? 'Perpustakaan Webinar' : 'Dashboard'}
+              {path === '/admin/dashboard' ? 'Dashboard Pengguna & Log Aktivitas' : path === '/moderation' ? 'Moderasi Konten' : path.startsWith('/settings') ? 'Kelola Role & Moderator' : path.startsWith('/best-practice') ? 'Best Practice Gallery' : path === '/webinar' ? 'Perpustakaan Webinar' : 'Dashboard Utama'}
             </h2>
           </div>
           <div className="flex items-center gap-4">
