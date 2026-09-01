@@ -47,11 +47,15 @@ export default function HeroSection() {
             }
           `}</style>
 
-          <div className="animate-marquee-track items-center gap-12 md:gap-16">
-            <img src="/bannerLogo1.png" alt="Banner Logo Kemendikdasmen 1" className="h-10 md:h-14 object-contain" />
-            <img src="/bannerLogo2.png" alt="Banner Logo Kemendikdasmen 2" className="h-10 md:h-14 object-contain" />
-            <img src="/bannerLogo1.png" alt="Banner Logo Kemendikdasmen 1" className="h-10 md:h-14 object-contain" />
-            <img src="/bannerLogo2.png" alt="Banner Logo Kemendikdasmen 2" className="h-10 md:h-14 object-contain" />
+          <div className="animate-marquee-track items-center gap-8 md:gap-12">
+            <div className="flex items-center gap-8 md:gap-12 shrink-0">
+              <img src="/bannerLogo1.png" alt="Banner Logo Kemendikdasmen 1" className="h-10 md:h-14 object-contain" />
+              <img src="/bannerLogo2.png" alt="Banner Logo Kemendikdasmen 2" className="h-10 md:h-14 object-contain" />
+            </div>
+            <div className="flex items-center gap-8 md:gap-12 shrink-0">
+              <img src="/bannerLogo1.png" alt="Banner Logo Kemendikdasmen 1" className="h-10 md:h-14 object-contain" />
+              <img src="/bannerLogo2.png" alt="Banner Logo Kemendikdasmen 2" className="h-10 md:h-14 object-contain" />
+            </div>
           </div>
         </div>
       </div>
