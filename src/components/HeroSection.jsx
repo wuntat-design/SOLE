@@ -26,6 +26,34 @@ export default function HeroSection() {
             Lihat Webinar
           </Link>
         </div>
+
+        {/* Moving Banner Slider Below Navigation Buttons */}
+        <div className="w-full overflow-hidden mt-6 py-4 relative group">
+          <div className="absolute left-0 top-0 bottom-0 w-12 md:w-20 bg-gradient-to-r from-surface dark:from-slate-900 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-12 md:w-20 bg-gradient-to-l from-surface dark:from-slate-900 to-transparent z-10 pointer-events-none"></div>
+
+          <style>{`
+            @keyframes marqueeForward {
+              0% { transform: translateX(0%); }
+              100% { transform: translateX(-50%); }
+            }
+            .animate-marquee-track {
+              display: flex;
+              width: max-content;
+              animation: marqueeForward 25s linear infinite;
+            }
+            .animate-marquee-track:hover {
+              animation-play-state: paused;
+            }
+          `}</style>
+
+          <div className="animate-marquee-track items-center gap-12 md:gap-16">
+            <img src="/bannerLogo1.png" alt="Banner Logo Kemendikdasmen 1" className="h-10 md:h-14 object-contain" />
+            <img src="/bannerLogo2.png" alt="Banner Logo Kemendikdasmen 2" className="h-10 md:h-14 object-contain" />
+            <img src="/bannerLogo1.png" alt="Banner Logo Kemendikdasmen 1" className="h-10 md:h-14 object-contain" />
+            <img src="/bannerLogo2.png" alt="Banner Logo Kemendikdasmen 2" className="h-10 md:h-14 object-contain" />
+          </div>
+        </div>
       </div>
     </section>
   )
