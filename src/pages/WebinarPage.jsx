@@ -12,6 +12,8 @@ export default function WebinarPage() {
   const [lastSynced, setLastSynced] = useState(getStoredLastSynced)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('Semua')
+  const [currentPage, setCurrentPage] = useState(1)
+  const VIDEOS_PER_PAGE = 30
 
   useEffect(() => {
     const handleSyncedEvent = (e) => {
@@ -23,6 +25,11 @@ export default function WebinarPage() {
     window.addEventListener('youtube_synced', handleSyncedEvent)
     return () => window.removeEventListener('youtube_synced', handleSyncedEvent)
   }, [])
+
+  // Reset page when search or category filter changes
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery, selectedCategory])
 
   const handleSync = async () => {
     setIsSyncing(true)
@@ -39,6 +46,11 @@ export default function WebinarPage() {
     const matchesCategory = selectedCategory === 'Semua' || video.category === selectedCategory
     return matchesSearch && matchesCategory
   })
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredVideos.length / VIDEOS_PER_PAGE) || 1
+  const startIndex = (currentPage - 1) * VIDEOS_PER_PAGE
+  const currentVideos = filteredVideos.slice(startIndex, startIndex + VIDEOS_PER_PAGE)
 
   return (
     <div className="flex flex-col flex-1 w-full relative">
@@ -109,7 +121,7 @@ export default function WebinarPage() {
           </div>
           {/* Video Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 py-8 w-full">
-            {filteredVideos.map((video) => (
+            {currentVideos.map((video) => (
               <div
                 key={video.id}
                 className="flex flex-col gap-4 group cursor-pointer bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:shadow-xl transition-all duration-300"
@@ -170,6 +182,53 @@ export default function WebinarPage() {
               </div>
             ))}
           </div>
+
+          {/* Pagination Controls */}
+          {filteredVideos.length > 0 && (
+            <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                Menampilkan <span className="font-bold text-slate-900 dark:text-white">{startIndex + 1}</span> - <span className="font-bold text-slate-900 dark:text-white">{Math.min(startIndex + VIDEOS_PER_PAGE, filteredVideos.length)}</span> dari <span className="font-bold text-slate-900 dark:text-white">{filteredVideos.length}</span> Video Webinar
+              </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-sm">chevron_left</span>
+                    Sebelumnya
+                  </button>
+
+                  <div className="flex items-center gap-1 px-2">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`w-10 h-10 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                          currentPage === pageNum
+                            ? 'bg-primary text-white shadow-md shadow-primary/20'
+                            : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-primary'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+                  >
+                    Selanjutnya
+                    <span className="material-symbols-outlined text-sm">chevron_right</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <Footer />

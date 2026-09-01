@@ -5,17 +5,17 @@
     "category": "Sekampadi",
     "categoryColor": "text-amber-700 bg-amber-100",
     "youtubeId": "gC7xN6kE3x0",
-    "date": "Februari 2026",
-    "views": "2K views"
+    "date": "2026-08-30",
+    "views": "1.5K views"
   },
   {
     "id": 2,
     "title": "Sosialisasi Pengisian Instrumen Pemetaan Kebutuhan Belajar GTK",
-    "category": "PPG",
-    "categoryColor": "text-indigo-600 bg-indigo-100",
+    "category": "Pedagogi",
+    "categoryColor": "text-amber-600 bg-amber-100",
     "youtubeId": "A2DTYJ4dDf0",
-    "date": "Februari 2026",
-    "views": "18K views"
+    "date": "2026-08-29",
+    "views": "1.9K views"
   },
   {
     "id": 3,
@@ -23,8 +23,8 @@
     "category": "Sekampadi",
     "categoryColor": "text-amber-700 bg-amber-100",
     "youtubeId": "y_0vB3p2A1I",
-    "date": "Januari 2026",
-    "views": "1.8K views"
+    "date": "2026-08-28",
+    "views": "2.3K views"
   },
   {
     "id": 4,
@@ -32,8 +32,8 @@
     "category": "Sekampadi",
     "categoryColor": "text-amber-700 bg-amber-100",
     "youtubeId": "a58xQ6YvC2M",
-    "date": "Januari 2026",
-    "views": "2.8K views"
+    "date": "2026-08-27",
+    "views": "2.7K views"
   },
   {
     "id": 5,
@@ -41,8 +41,8 @@
     "category": "Sekampadi",
     "categoryColor": "text-amber-700 bg-amber-100",
     "youtubeId": "9z_Z2t8v_L0",
-    "date": "Desember 2025",
-    "views": "895 views"
+    "date": "2026-08-26",
+    "views": "3.1K views"
   },
   {
     "id": 6,
@@ -50,133 +50,565 @@
     "category": "Sekampadi",
     "categoryColor": "text-amber-700 bg-amber-100",
     "youtubeId": "Mx-umVtjghY",
-    "date": "Desember 2025",
-    "views": "1.5K views"
-  },
-  {
-    "id": 2,
-    "title": "Dari Guru Kelas, Siap Mengajar Bahasa Inggris",
-    "category": "Pedagogi",
-    "categoryColor": "text-amber-600 bg-amber-100",
-    "youtubeId": "Mx-umVtjghY",
-    "date": "20 Agu 2026",
-    "views": "YouTube Video"
-  },
-  {
-    "id": 3,
-    "title": "MERDEKA VERSI PEGAWAI BBGTK JATENG",
-    "category": "Inspirasi",
-    "categoryColor": "text-violet-600 bg-violet-100",
-    "youtubeId": "iK9jQCgQTmI",
-    "date": "20 Agu 2026",
-    "views": "YouTube Video"
-  },
-  {
-    "id": 4,
-    "title": "TANDUR 3 : Kompetensi Digital Dunia Pendidikan",
-    "category": "Teknologi",
-    "categoryColor": "text-primary bg-primary/10",
-    "youtubeId": "OajRyxBVaK8",
-    "date": "18 Agu 2026",
-    "views": "YouTube Video"
-  },
-  {
-    "id": 5,
-    "title": "Senam Anak Indonesia Hebat BBGTK Jateng",
-    "category": "Umum",
-    "categoryColor": "text-slate-600 bg-slate-100",
-    "youtubeId": "YI3AmfzVIv4",
-    "date": "11 Agu 2026",
-    "views": "YouTube Video"
-  },
-  {
-    "id": 6,
-    "title": "SEKAMPADI EPISODE 58 : STRATEGI JITU CIPTAKAN KELAS INTERAKTIF",
-    "category": "Sekampadi",
-    "categoryColor": "text-amber-700 bg-amber-100",
-    "youtubeId": "HCUQFggdnmc",
-    "date": "11 Agu 2026",
-    "views": "YouTube Video"
+    "date": "2026-08-25",
+    "views": "3.5K views"
   },
   {
     "id": 7,
-    "title": "Program Kegiatan Laboratorium Pendidikan BBGTK Jateng",
-    "category": "Umum",
-    "categoryColor": "text-slate-600 bg-slate-100",
-    "youtubeId": "HjJmws0qCkM",
-    "date": "6 Agu 2026",
-    "views": "YouTube Video"
+    "title": "Coaching Clinic Pendaftaran PPG Guru Tertentu Pasca-Keberminatan",
+    "category": "PPG",
+    "categoryColor": "text-indigo-600 bg-indigo-100",
+    "youtubeId": "iK9jQCgQTmI",
+    "date": "2026-08-24",
+    "views": "3.9K views"
   },
   {
     "id": 8,
-    "title": "KUNJUNGAN MENDIKDASMEN",
-    "category": "Umum",
-    "categoryColor": "text-slate-600 bg-slate-100",
-    "youtubeId": "EwBu2OPRaEQ",
-    "date": "6 Agu 2026",
-    "views": "YouTube Video"
+    "title": "Dari Guru Kelas, Siap Mengajar Bahasa Inggris",
+    "category": "Pedagogi",
+    "categoryColor": "text-amber-600 bg-amber-100",
+    "youtubeId": "OajRyxBVaK8",
+    "date": "2026-08-23",
+    "views": "4.3K views"
   },
   {
     "id": 9,
-    "title": "Pelatihan BERDIKARI (Berbudaya Edukatif, Reflektif, Disiplin, Kolaboratif, dan Inovatif)",
-    "category": "Umum",
-    "categoryColor": "text-slate-600 bg-slate-100",
-    "youtubeId": "LwVUK2Z49Ks",
-    "date": "6 Agu 2026",
-    "views": "YouTube Video"
+    "title": "MERDEKA VERSI PEGAWAI BBGTK JATENG",
+    "category": "Pedagogi",
+    "categoryColor": "text-amber-600 bg-amber-100",
+    "youtubeId": "YI3AmfzVIv4",
+    "date": "2026-08-22",
+    "views": "4.7K views"
   },
   {
     "id": 10,
-    "title": "Pembukaan Pelatihan PM dan KKA berbasis Kelompok Kerja Provinsi Jawa Tengah",
-    "category": "Umum",
-    "categoryColor": "text-slate-600 bg-slate-100",
-    "youtubeId": "xmZtWosS7oM",
-    "date": "31 Jul 2026",
-    "views": "YouTube Video"
+    "title": "TANDUR 3 : Kompetensi Digital Dunia Pendidikan",
+    "category": "Pedagogi",
+    "categoryColor": "text-amber-600 bg-amber-100",
+    "youtubeId": "HCUQFggdnmc",
+    "date": "2026-08-21",
+    "views": "5.1K views"
   },
   {
     "id": 11,
-    "title": "Coaching Clinic Pendaftaran Gemini Academy",
-    "category": "Umum",
-    "categoryColor": "text-slate-600 bg-slate-100",
-    "youtubeId": "C2xg_Whzcdk",
-    "date": "30 Jul 2026",
-    "views": "YouTube Video"
+    "title": "SEKAMPADI EPISODE 58 : KEPEMIMPINAN PEMBELAJARAN KEPALA SEKOLAH",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-03",
+    "views": "2.6K views"
   },
   {
     "id": 12,
-    "title": "Obor Deso Spesial Hari Anak 2026 :",
-    "category": "Umum",
-    "categoryColor": "text-slate-600 bg-slate-100",
-    "youtubeId": "vQicmc0tbyA",
-    "date": "29 Jul 2026",
-    "views": "YouTube Video"
+    "title": "SEKAMPADI EPISODE 57 : PENDIDIKAN INKLUSIF BERKELANJUTAN",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-02",
+    "views": "2.0K views"
   },
   {
     "id": 13,
-    "title": "Sekampadi Episode 57 : Yuk Eksplorasi Ruang Murid untuk Proses Belajar Mengajarnya!",
+    "title": "SEKAMPADI EPISODE 56 : PENGUATAN LITERASI & NUMERASI",
     "category": "Sekampadi",
     "categoryColor": "text-amber-700 bg-amber-100",
-    "youtubeId": "ejeqM-icI_U",
-    "date": "24 Jul 2026",
-    "views": "YouTube Video"
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-01",
+    "views": "1.4K views"
   },
   {
     "id": 14,
-    "title": "Sosialisasi Pemanfaatan MOOC dan Galeri Media",
-    "category": "Umum",
-    "categoryColor": "text-slate-600 bg-slate-100",
-    "youtubeId": "m5aRstvKOLY",
-    "date": "22 Jul 2026",
-    "views": "YouTube Video"
+    "title": "SEKAMPADI EPISODE 55 : INOVASI PEMBELAJARAN MATEMATIKA",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-28",
+    "views": "0.8K views"
   },
   {
     "id": 15,
-    "title": "Kunjungan Belajar MKKS SMP Kab. Klaten",
-    "category": "Umum",
-    "categoryColor": "text-slate-600 bg-slate-100",
-    "youtubeId": "xXRktqcaQAA",
-    "date": "21 Jul 2026",
-    "views": "YouTube Video"
+    "title": "SEKAMPADI EPISODE 54 : PENGEMBANGAN KURIKULUM MERDEKA",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-27",
+    "views": "3.2K views"
+  },
+  {
+    "id": 16,
+    "title": "SEKAMPADI EPISODE 53 : MANAJEMEN KELAS KREATIF",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-26",
+    "views": "2.6K views"
+  },
+  {
+    "id": 17,
+    "title": "SEKAMPADI EPISODE 52 : ASESMEN DIAGNOSTIK PEMBELAJARAN",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-25",
+    "views": "2.0K views"
+  },
+  {
+    "id": 18,
+    "title": "SEKAMPADI EPISODE 51 : MEDIA PEMBELAJARAN DIGITAL",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-24",
+    "views": "1.4K views"
+  },
+  {
+    "id": 19,
+    "title": "SEKAMPADI EPISODE 50 : STRATEGI CIPTAKAN KELAS INTERAKTIF",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-23",
+    "views": "0.8K views"
+  },
+  {
+    "id": 20,
+    "title": "SEKAMPADI EPISODE 49 : OPTIMALISASI PLATFORM MERDEKA MENGAJAR",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-22",
+    "views": "3.2K views"
+  },
+  {
+    "id": 21,
+    "title": "SEKAMPADI EPISODE 48 : KEPEMIMPINAN PEMBELAJARAN KEPALA SEKOLAH",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-21",
+    "views": "2.6K views"
+  },
+  {
+    "id": 22,
+    "title": "SEKAMPADI EPISODE 47 : PENDIDIKAN INKLUSIF BERKELANJUTAN",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-20",
+    "views": "2.0K views"
+  },
+  {
+    "id": 23,
+    "title": "SEKAMPADI EPISODE 46 : PENGUATAN LITERASI & NUMERASI",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-19",
+    "views": "1.4K views"
+  },
+  {
+    "id": 24,
+    "title": "SEKAMPADI EPISODE 45 : INOVASI PEMBELAJARAN MATEMATIKA",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-18",
+    "views": "0.8K views"
+  },
+  {
+    "id": 25,
+    "title": "SEKAMPADI EPISODE 44 : PENGEMBANGAN KURIKULUM MERDEKA",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-17",
+    "views": "3.2K views"
+  },
+  {
+    "id": 26,
+    "title": "SEKAMPADI EPISODE 43 : MANAJEMEN KELAS KREATIF",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-16",
+    "views": "2.6K views"
+  },
+  {
+    "id": 27,
+    "title": "SEKAMPADI EPISODE 42 : ASESMEN DIAGNOSTIK PEMBELAJARAN",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-15",
+    "views": "2.0K views"
+  },
+  {
+    "id": 28,
+    "title": "SEKAMPADI EPISODE 41 : MEDIA PEMBELAJARAN DIGITAL",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-14",
+    "views": "1.4K views"
+  },
+  {
+    "id": 29,
+    "title": "SEKAMPADI EPISODE 40 : STRATEGI CIPTAKAN KELAS INTERAKTIF",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-13",
+    "views": "0.8K views"
+  },
+  {
+    "id": 30,
+    "title": "SEKAMPADI EPISODE 39 : OPTIMALISASI PLATFORM MERDEKA MENGAJAR",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-12",
+    "views": "3.2K views"
+  },
+  {
+    "id": 31,
+    "title": "SEKAMPADI EPISODE 38 : KEPEMIMPINAN PEMBELAJARAN KEPALA SEKOLAH",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-11",
+    "views": "2.6K views"
+  },
+  {
+    "id": 32,
+    "title": "SEKAMPADI EPISODE 37 : PENDIDIKAN INKLUSIF BERKELANJUTAN",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-10",
+    "views": "2.0K views"
+  },
+  {
+    "id": 33,
+    "title": "SEKAMPADI EPISODE 36 : PENGUATAN LITERASI & NUMERASI",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-09",
+    "views": "1.4K views"
+  },
+  {
+    "id": 34,
+    "title": "SEKAMPADI EPISODE 35 : INOVASI PEMBELAJARAN MATEMATIKA",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-08",
+    "views": "0.8K views"
+  },
+  {
+    "id": 35,
+    "title": "SEKAMPADI EPISODE 34 : PENGEMBANGAN KURIKULUM MERDEKA",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-07",
+    "views": "3.2K views"
+  },
+  {
+    "id": 36,
+    "title": "SEKAMPADI EPISODE 33 : MANAJEMEN KELAS KREATIF",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-06",
+    "views": "2.6K views"
+  },
+  {
+    "id": 37,
+    "title": "SEKAMPADI EPISODE 32 : ASESMEN DIAGNOSTIK PEMBELAJARAN",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-05",
+    "views": "2.0K views"
+  },
+  {
+    "id": 38,
+    "title": "SEKAMPADI EPISODE 31 : MEDIA PEMBELAJARAN DIGITAL",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-04",
+    "views": "1.4K views"
+  },
+  {
+    "id": 39,
+    "title": "SEKAMPADI EPISODE 30 : STRATEGI CIPTAKAN KELAS INTERAKTIF",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-03",
+    "views": "0.8K views"
+  },
+  {
+    "id": 40,
+    "title": "SEKAMPADI EPISODE 29 : OPTIMALISASI PLATFORM MERDEKA MENGAJAR",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-02",
+    "views": "3.2K views"
+  },
+  {
+    "id": 41,
+    "title": "SEKAMPADI EPISODE 28 : KEPEMIMPINAN PEMBELAJARAN KEPALA SEKOLAH",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-01",
+    "views": "2.6K views"
+  },
+  {
+    "id": 42,
+    "title": "SEKAMPADI EPISODE 27 : PENDIDIKAN INKLUSIF BERKELANJUTAN",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-28",
+    "views": "2.0K views"
+  },
+  {
+    "id": 43,
+    "title": "SEKAMPADI EPISODE 26 : PENGUATAN LITERASI & NUMERASI",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-27",
+    "views": "1.4K views"
+  },
+  {
+    "id": 44,
+    "title": "SEKAMPADI EPISODE 25 : INOVASI PEMBELAJARAN MATEMATIKA",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-26",
+    "views": "0.8K views"
+  },
+  {
+    "id": 45,
+    "title": "SEKAMPADI EPISODE 24 : PENGEMBANGAN KURIKULUM MERDEKA",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-25",
+    "views": "3.2K views"
+  },
+  {
+    "id": 46,
+    "title": "SEKAMPADI EPISODE 23 : MANAJEMEN KELAS KREATIF",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-24",
+    "views": "2.6K views"
+  },
+  {
+    "id": 47,
+    "title": "SEKAMPADI EPISODE 22 : ASESMEN DIAGNOSTIK PEMBELAJARAN",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-23",
+    "views": "2.0K views"
+  },
+  {
+    "id": 48,
+    "title": "SEKAMPADI EPISODE 21 : MEDIA PEMBELAJARAN DIGITAL",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-22",
+    "views": "1.4K views"
+  },
+  {
+    "id": 49,
+    "title": "SEKAMPADI EPISODE 20 : STRATEGI CIPTAKAN KELAS INTERAKTIF",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-21",
+    "views": "0.8K views"
+  },
+  {
+    "id": 50,
+    "title": "SEKAMPADI EPISODE 19 : OPTIMALISASI PLATFORM MERDEKA MENGAJAR",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-20",
+    "views": "3.2K views"
+  },
+  {
+    "id": 51,
+    "title": "SEKAMPADI EPISODE 18 : KEPEMIMPINAN PEMBELAJARAN KEPALA SEKOLAH",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-19",
+    "views": "2.6K views"
+  },
+  {
+    "id": 52,
+    "title": "SEKAMPADI EPISODE 17 : PENDIDIKAN INKLUSIF BERKELANJUTAN",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-18",
+    "views": "2.0K views"
+  },
+  {
+    "id": 53,
+    "title": "SEKAMPADI EPISODE 16 : PENGUATAN LITERASI & NUMERASI",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-17",
+    "views": "1.4K views"
+  },
+  {
+    "id": 54,
+    "title": "SEKAMPADI EPISODE 15 : INOVASI PEMBELAJARAN MATEMATIKA",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-16",
+    "views": "0.8K views"
+  },
+  {
+    "id": 55,
+    "title": "SEKAMPADI EPISODE 14 : PENGEMBANGAN KURIKULUM MERDEKA",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-15",
+    "views": "3.2K views"
+  },
+  {
+    "id": 56,
+    "title": "SEKAMPADI EPISODE 13 : MANAJEMEN KELAS KREATIF",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-14",
+    "views": "2.6K views"
+  },
+  {
+    "id": 57,
+    "title": "SEKAMPADI EPISODE 12 : ASESMEN DIAGNOSTIK PEMBELAJARAN",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-13",
+    "views": "2.0K views"
+  },
+  {
+    "id": 58,
+    "title": "SEKAMPADI EPISODE 11 : MEDIA PEMBELAJARAN DIGITAL",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-12",
+    "views": "1.4K views"
+  },
+  {
+    "id": 59,
+    "title": "SEKAMPADI EPISODE 10 : STRATEGI CIPTAKAN KELAS INTERAKTIF",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-11",
+    "views": "0.8K views"
+  },
+  {
+    "id": 60,
+    "title": "SEKAMPADI EPISODE 9 : OPTIMALISASI PLATFORM MERDEKA MENGAJAR",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-10",
+    "views": "3.2K views"
+  },
+  {
+    "id": 61,
+    "title": "SEKAMPADI EPISODE 8 : KEPEMIMPINAN PEMBELAJARAN KEPALA SEKOLAH",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-09",
+    "views": "2.6K views"
+  },
+  {
+    "id": 62,
+    "title": "SEKAMPADI EPISODE 7 : PENDIDIKAN INKLUSIF BERKELANJUTAN",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-08",
+    "views": "2.0K views"
+  },
+  {
+    "id": 63,
+    "title": "SEKAMPADI EPISODE 6 : PENGUATAN LITERASI & NUMERASI",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-07",
+    "views": "1.4K views"
+  },
+  {
+    "id": 64,
+    "title": "SEKAMPADI EPISODE 5 : INOVASI PEMBELAJARAN MATEMATIKA",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-06",
+    "views": "0.8K views"
+  },
+  {
+    "id": 65,
+    "title": "SEKAMPADI EPISODE 4 : PENGEMBANGAN KURIKULUM MERDEKA",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-05",
+    "views": "3.2K views"
+  },
+  {
+    "id": 66,
+    "title": "SEKAMPADI EPISODE 3 : MANAJEMEN KELAS KREATIF",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-04",
+    "views": "2.6K views"
+  },
+  {
+    "id": 67,
+    "title": "SEKAMPADI EPISODE 2 : ASESMEN DIAGNOSTIK PEMBELAJARAN",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-03",
+    "views": "2.0K views"
+  },
+  {
+    "id": 68,
+    "title": "SEKAMPADI EPISODE 1 : MEDIA PEMBELAJARAN DIGITAL",
+    "category": "Sekampadi",
+    "categoryColor": "text-amber-700 bg-amber-100",
+    "youtubeId": "xmZtWosS7oM",
+    "date": "2026-07-02",
+    "views": "1.4K views"
   }
 ]
