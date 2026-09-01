@@ -13,7 +13,7 @@ export default function WebinarPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('Semua')
   const [currentPage, setCurrentPage] = useState(1)
-  const VIDEOS_PER_PAGE = 30
+  const VIDEOS_PER_PAGE = 15
 
   useEffect(() => {
     const handleSyncedEvent = (e) => {
