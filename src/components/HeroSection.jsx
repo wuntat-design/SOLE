@@ -1,5 +1,17 @@
 import { Link } from 'react-router-dom';
 
+const heroLogos = [
+  { name: 'BerAKHLAK', src: '/logos/BERAKHLAK.png' },
+  { name: 'Berani Jujur Hebat', src: '/logos/Berani Jujur Hebat.png' },
+  { name: 'LOGO BBGTK', src: '/logos/LOGO BBGTKAsset 3.png' },
+  { name: 'RAMAH', src: '/logos/RAMAH.png' },
+  { name: 'ZI WBK 5', src: '/logos/ZI WBKAsset 5.png' },
+  { name: 'ZI WBK 7', src: '/logos/ZI WBKAsset 7.png' },
+  { name: 'Bangga Melayani', src: '/logos/bangga.png' },
+  { name: 'Logo ZI WBK Baru', src: '/logos/logo ZI WBK baruAsset 5.png' },
+  { name: 'Rumah Pendidikan', src: '/logos/rumah-pendidikan.png' },
+];
+
 export default function HeroSection() {
   return (
     <section className="max-w-7xl mx-auto px-4 md:px-10 lg:px-40 pt-8 pb-12">
@@ -40,7 +52,7 @@ export default function HeroSection() {
             .animate-marquee-track {
               display: flex;
               width: max-content;
-              animation: marqueeForward 25s linear infinite;
+              animation: marqueeForward 30s linear infinite;
             }
             .animate-marquee-track:hover {
               animation-play-state: paused;
@@ -48,14 +60,14 @@ export default function HeroSection() {
           `}</style>
 
           <div className="animate-marquee-track items-center gap-8 md:gap-12">
-            <div className="flex items-center gap-8 md:gap-12 shrink-0">
-              <img src="/bannerLogo1.png" alt="Banner Logo Kemendikdasmen 1" className="h-10 md:h-14 object-contain" />
-              <img src="/bannerLogo2.png" alt="Banner Logo Kemendikdasmen 2" className="h-10 md:h-14 object-contain" />
-            </div>
-            <div className="flex items-center gap-8 md:gap-12 shrink-0">
-              <img src="/bannerLogo1.png" alt="Banner Logo Kemendikdasmen 1" className="h-10 md:h-14 object-contain" />
-              <img src="/bannerLogo2.png" alt="Banner Logo Kemendikdasmen 2" className="h-10 md:h-14 object-contain" />
-            </div>
+            {[...heroLogos, ...heroLogos].map((logo, index) => (
+              <img
+                key={index}
+                src={logo.src}
+                alt={logo.name}
+                className="h-10 md:h-14 max-w-[130px] md:max-w-[170px] object-contain shrink-0 filter hover:scale-105 transition-transform"
+              />
+            ))}
           </div>
         </div>
       </div>
