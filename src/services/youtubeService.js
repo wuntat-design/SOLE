@@ -32,16 +32,14 @@ export function getStoredVideos() {
   if (saved) {
     try {
       const parsed = JSON.parse(saved)
-      // Pastikan cache memiliki video terbaru (misal Sekampadi 62 / ID video teratas)
-      const hasLatest = parsed && parsed.length >= defaultVideos.length && parsed.some(v => v.youtubeId === defaultVideos[0].youtubeId)
-      if (hasLatest) {
+      const isUpToDate = parsed && parsed.length === defaultVideos.length && parsed[0]?.youtubeId === defaultVideos[0]?.youtubeId
+      if (isUpToDate) {
         return parsed
       }
     } catch {
       // Fallback jika parse error
     }
   }
-  // Update cache dengan dataset terbaru yang berisi Sekampadi 59-62 & video BBGTK
   localStorage.setItem('bbgtk_youtube_videos', JSON.stringify(defaultVideos))
   return defaultVideos
 }

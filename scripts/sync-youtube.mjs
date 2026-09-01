@@ -6,10 +6,9 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const youtubeIds = [
-  'gC7xN6kE3x0', 'A2DTYJ4dDf0', 'y_0vB3p2A1I', 'a58xQ6YvC2M', '9z_Z2t8v_L0',
-  'Mx-umVtjghY', 'iK9jQCgQTmI', 'OajRyxBVaK8', 'YI3AmfzVIv4', 'HCUQFggdnmc',
-  'HjJmws0qCkM', 'EwBu2OPRaEQ', 'LwVUK2Z49Ks', 'xmZtWosS7oM', 'C2xg_Whzcdk',
-  'vQicmc0tbyA', 'ejeqM-icI_U', 'm5aRstvKOLY', 'xXRktqcaQAA'
+  'A2DTYJ4dDf0', 'Mx-umVtjghY', 'iK9jQCgQTmI', 'OajRyxBVaK8', 'YI3AmfzVIv4',
+  'HCUQFggdnmc', 'HjJmws0qCkM', 'EwBu2OPRaEQ', 'LwVUK2Z49Ks', 'xmZtWosS7oM',
+  'C2xg_Whzcdk', 'vQicmc0tbyA', 'ejeqM-icI_U', 'm5aRstvKOLY', 'xXRktqcaQAA'
 ]
 
 const categoryColors = {
