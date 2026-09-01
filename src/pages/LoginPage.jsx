@@ -7,6 +7,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showGoogleModal, setShowGoogleModal] = useState(false);
+  const [emailInputValue, setEmailInputValue] = useState('');
   const [googleEmailInput, setGoogleEmailInput] = useState('');
   const [googleError, setGoogleError] = useState('');
 
@@ -14,6 +15,34 @@ export default function LoginPage() {
   const isBelajarIdEmail = (email) => {
     const belajarIdRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9-]+\.)*belajar\.id$/i;
     return belajarIdRegex.test(email);
+  };
+
+  const handleOpenGoogleModal = () => {
+    const typedEmail = emailInputValue.trim();
+    if (typedEmail && isBelajarIdEmail(typedEmail)) {
+      // Jika email sudah diisi dan formatnya @*.belajar.id, langsung masuk!
+      let role = "user";
+      let fullName = typedEmail.split('@')[0].replace(/[._]/g, ' ');
+      fullName = fullName.charAt(0).toUpperCase() + fullName.slice(1);
+      
+      if (typedEmail.includes("superadmin")) role = "superadmin";
+      else if (typedEmail.includes("admin")) role = "admin";
+
+      login({
+        firstName: fullName.split(' ')[0],
+        fullName: `${fullName} (akun belajar.id)`,
+        email: typedEmail,
+        school: 'Akun Pembelajaran (belajar.id)',
+        role: role
+      });
+      navigate("/");
+      return;
+    }
+
+    // Jika belum diisi atau bukan format @*.belajar.id, buka modal verifikasi Google
+    setGoogleEmailInput(typedEmail);
+    setGoogleError('');
+    setShowGoogleModal(true);
   };
 
   const handleGoogleLoginSubmit = (e) => {
@@ -27,7 +56,6 @@ export default function LoginPage() {
     setGoogleError('');
     setShowGoogleModal(false);
 
-    // Tentukan role berdasarkan kata kunci di email
     let role = "user";
     let fullName = email.split('@')[0].replace(/[._]/g, ' ');
     fullName = fullName.charAt(0).toUpperCase() + fullName.slice(1);
@@ -140,7 +168,14 @@ export default function LoginPage() {
                 <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant block ml-1">Email</label>
                 <div className="relative group">
                   <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">mail</span>
-                  <input className="w-full pl-12 pr-4 py-4 bg-surface-container-low border-transparent focus:border-primary focus:ring-0 rounded-xl font-medium text-on-surface transition-all placeholder:text-outline-variant outline-none" placeholder="nama@instansi.sch.id" required type="email" />
+                  <input
+                    value={emailInputValue}
+                    onChange={(e) => setEmailInputValue(e.target.value)}
+                    className="w-full pl-12 pr-4 py-4 bg-surface-container-low border-transparent focus:border-primary focus:ring-0 rounded-xl font-medium text-on-surface transition-all placeholder:text-outline-variant outline-none"
+                    placeholder="nama@instansi.sch.id atau nama@sd.belajar.id"
+                    required
+                    type="email"
+                  />
                 </div>
               </div>
 
@@ -182,7 +217,7 @@ export default function LoginPage() {
             <div className="grid grid-cols-1 gap-3">
               <button 
                 type="button"
-                onClick={() => { setGoogleEmailInput(''); setGoogleError(''); setShowGoogleModal(true); }}
+                onClick={handleOpenGoogleModal}
                 className="w-full flex items-center justify-center gap-2.5 py-4 px-6 bg-[#2264d1] hover:bg-[#1b53b2] text-white rounded-full font-bold text-base shadow-lg transition-all cursor-pointer"
               >
                 <svg className="w-5 h-5 bg-white rounded-full p-0.5 shrink-0" viewBox="0 0 24 24">
