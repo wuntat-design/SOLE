@@ -54,14 +54,14 @@ function WebinarCard({ webinar }) {
 export default function WebinarSection() {
   const { user } = useAuth()
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin'
-  const [webinars, setWebinars] = useState(() => getStoredVideos().slice(0, 4))
+  const [webinars, setWebinars] = useState(() => getStoredVideos().slice(0, 5))
   const [isSyncing, setIsSyncing] = useState(false)
   const [lastSynced, setLastSynced] = useState(getStoredLastSynced)
 
   useEffect(() => {
     const handleSyncedEvent = (e) => {
       if (e.detail?.videos) {
-        setWebinars(e.detail.videos.slice(0, 4))
+        setWebinars(e.detail.videos.slice(0, 5))
         setLastSynced(e.detail.time)
       }
     }
@@ -73,14 +73,14 @@ export default function WebinarSection() {
     setIsSyncing(true)
     const result = await syncYouTubeFeed()
     if (result.success) {
-      setWebinars(result.videos.slice(0, 4))
+      setWebinars(result.videos.slice(0, 5))
       setLastSynced(result.time)
     }
     setIsSyncing(false)
   }
 
   return (
-    <section className="max-w-7xl mx-auto px-4 md:px-10 lg:px-40 py-12">
+    <section className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-12">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
         <div>
           <div className="flex items-center gap-3">
@@ -117,7 +117,7 @@ export default function WebinarSection() {
           <span className="material-symbols-outlined text-sm">arrow_forward</span>
         </Link>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-5">
         {webinars.map((webinar) => (
           <WebinarCard key={webinar.id} webinar={webinar} />
         ))}
