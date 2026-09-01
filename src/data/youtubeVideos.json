@@ -1,6 +1,42 @@
 [
   {
     "id": 1,
+    "title": "SEKAMPADI EPISODE 62 : OPTIMALISASI PEMANFAATAN AI UNTUK ASESMEN PEMBELAJARAN",
+    "category": "Teknologi",
+    "categoryColor": "text-primary bg-primary/10",
+    "youtubeId": "gC7xN6kE3x0",
+    "date": "28 Agu 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 2,
+    "title": "SEKAMPADI EPISODE 61 : PERANCANGAN MODUL AJAR BERBASIS PROJECT-BASED LEARNING",
+    "category": "Pedagogi",
+    "categoryColor": "text-amber-600 bg-amber-100",
+    "youtubeId": "y_0vB3p2A1I",
+    "date": "26 Agu 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 3,
+    "title": "SEKAMPADI EPISODE 60 : INTEGRASI PEMBELAJARAN MENDALAM DAN KARAKTER SISWA",
+    "category": "Inspirasi",
+    "categoryColor": "text-violet-600 bg-violet-100",
+    "youtubeId": "a58xQ6YvC2M",
+    "date": "25 Agu 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 4,
+    "title": "SEKAMPADI EPISODE 59 : MEDIA PEMBELAJARAN KREATIF UNTUK SEKOLAH DASAR",
+    "category": "Pedagogi",
+    "categoryColor": "text-amber-600 bg-amber-100",
+    "youtubeId": "9z_Z2t8v_L0",
+    "date": "23 Agu 2026",
+    "views": "YouTube Video"
+  },
+  {
+    "id": 5,
     "title": "Coaching Clinic Pendaftaran PPG Guru Tertentu Pasca-Keberminatan",
     "category": "PPG",
     "categoryColor": "text-indigo-600 bg-indigo-100",
