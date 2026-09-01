@@ -133,8 +133,39 @@ export default function ModerationPage() {
   };
 
   const handleApprove = (id) => {
+    const targetPost = posts.find(p => p.id === id);
     const newPosts = posts.map(p => p.id === id ? { ...p, status: 'published', rejectNote: '' } : p);
     savePosts(newPosts);
+
+    if (targetPost) {
+      // 1. Create Approval Notification
+      const existingNotifs = JSON.parse(localStorage.getItem('bbgtk_notifications') || '[]');
+      const newNotif = {
+        id: Date.now(),
+        targetAuthor: targetPost.author,
+        targetHandle: targetPost.authorHandle,
+        postTitle: targetPost.title,
+        rejectNote: '',
+        timestamp: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        read: false,
+        type: 'approved'
+      };
+      localStorage.setItem('bbgtk_notifications', JSON.stringify([newNotif, ...existingNotifs]));
+
+      // 2. Log Posting Audit Record
+      const existingPostingLogs = JSON.parse(localStorage.getItem('bbgtk_log_posting') || '[]');
+      const newPostingLog = {
+        id: Date.now(),
+        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+        userName: targetPost.author,
+        role: 'User',
+        action: 'Moderasi (Disetujui)',
+        title: targetPost.title,
+        category: targetPost.category || 'Best Practice',
+        status: 'Disetujui'
+      };
+      localStorage.setItem('bbgtk_log_posting', JSON.stringify([newPostingLog, ...existingPostingLogs]));
+    }
   };
 
   const openRejectModal = (post) => {
@@ -145,8 +176,38 @@ export default function ModerationPage() {
 
   const handleReject = () => {
     if (!rejectNote.trim()) return;
-    const newPosts = posts.map(p => p.id === rejectTarget.id ? { ...p, status: 'rejected', rejectNote: rejectNote.trim() } : p);
+    const noteText = rejectNote.trim();
+    const newPosts = posts.map(p => p.id === rejectTarget.id ? { ...p, status: 'rejected', rejectNote: noteText } : p);
     savePosts(newPosts);
+
+    // 1. Create User Notification for Rejection
+    const existingNotifs = JSON.parse(localStorage.getItem('bbgtk_notifications') || '[]');
+    const newNotif = {
+      id: Date.now(),
+      targetAuthor: rejectTarget.author,
+      targetHandle: rejectTarget.authorHandle,
+      postTitle: rejectTarget.title,
+      rejectNote: noteText,
+      timestamp: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      read: false,
+      type: 'rejected'
+    };
+    localStorage.setItem('bbgtk_notifications', JSON.stringify([newNotif, ...existingNotifs]));
+
+    // 2. Log Posting Audit Record
+    const existingPostingLogs = JSON.parse(localStorage.getItem('bbgtk_log_posting') || '[]');
+    const newPostingLog = {
+      id: Date.now(),
+      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      userName: rejectTarget.author,
+      role: 'User',
+      action: `Moderasi (Tolak: "${noteText}")`,
+      title: rejectTarget.title,
+      category: rejectTarget.category || 'Best Practice',
+      status: 'Ditolak'
+    };
+    localStorage.setItem('bbgtk_log_posting', JSON.stringify([newPostingLog, ...existingPostingLogs]));
+
     setShowRejectModal(false);
     setRejectTarget(null);
     setRejectNote('');

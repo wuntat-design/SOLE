@@ -6,10 +6,14 @@ import { syncYouTubeFeed } from '../services/youtubeService'
 export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [isSyncing, setIsSyncing] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
   const location = useLocation()
   const path = location.pathname
   
   const { user, isLoggedIn, logout } = useAuth()
+  
+  // Read notifications
+  const notifications = JSON.parse(localStorage.getItem('bbgtk_notifications') || '[]')
   
   // Mock role untuk simulasi. 
   const userRole = user?.role || 'user'
@@ -146,9 +150,96 @@ export default function DashboardLayout({ children }) {
           <div className="flex items-center gap-4">
             {isLoggedIn ? (
               <>
-                <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 cursor-pointer">
-                  <span className="material-symbols-outlined">notifications</span>
-                </button>
+                <div className="relative">
+                  <button 
+                    onClick={() => setShowNotifications(!showNotifications)}
+                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-colors cursor-pointer relative"
+                  >
+                    <span className="material-symbols-outlined">notifications</span>
+                    {notifications.length > 0 && (
+                      <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-600 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse"></span>
+                    )}
+                  </button>
+
+                  {/* Notification Dropdown Drawer */}
+                  {showNotifications && (
+                    <div className="absolute right-0 mt-3 w-80 md:w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 overflow-hidden">
+                      <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-primary text-base">notifications_active</span>
+                          <h3 className="font-bold text-sm text-slate-900 dark:text-white">Notifikasi Moderasi</h3>
+                        </div>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                          {notifications.length} Pesan
+                        </span>
+                      </div>
+
+                      <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
+                        {notifications.length === 0 ? (
+                          <div className="p-6 text-center text-xs text-slate-400 italic">
+                            Tidak ada notifikasi baru saat ini.
+                          </div>
+                        ) : (
+                          notifications.map((notif) => (
+                            <div key={notif.id} className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                              <div className="flex items-start gap-3">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+                                  notif.type === 'rejected' ? 'bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-400' : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400'
+                                }`}>
+                                  <span className="material-symbols-outlined text-base">
+                                    {notif.type === 'rejected' ? 'block' : 'check_circle'}
+                                  </span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center justify-between gap-1">
+                                    <h4 className={`text-xs font-bold ${notif.type === 'rejected' ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                                      {notif.type === 'rejected' ? '⚠️ Postingan Ditolak' : '✅ Postingan Disetujui'}
+                                    </h4>
+                                    <span className="text-[10px] text-slate-400 font-mono">{notif.timestamp}</span>
+                                  </div>
+                                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-1 line-clamp-1">
+                                    {notif.postTitle}
+                                  </p>
+                                  {notif.type === 'rejected' && notif.rejectNote && (
+                                    <div className="mt-2 p-2.5 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/40 text-xs text-red-700 dark:text-red-300 font-medium">
+                                      <span className="font-bold block mb-0.5">Alasan Penolakan:</span>
+                                      "{notif.rejectNote}"
+                                    </div>
+                                  )}
+                                  {notif.type === 'rejected' && (
+                                    <Link
+                                      to="/profile"
+                                      onClick={() => setShowNotifications(false)}
+                                      className="inline-flex items-center gap-1 mt-2 text-[11px] font-bold text-primary hover:underline"
+                                    >
+                                      <span>Perbaiki & Ajukan Ulang</span>
+                                      <span className="material-symbols-outlined text-xs">arrow_forward</span>
+                                    </Link>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+
+                      {notifications.length > 0 && (
+                        <div className="p-3 bg-slate-50 dark:bg-slate-800/60 text-center border-t border-slate-100 dark:border-slate-800">
+                          <button
+                            onClick={() => {
+                              localStorage.removeItem('bbgtk_notifications')
+                              setShowNotifications(false)
+                            }}
+                            className="text-xs font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 cursor-pointer"
+                          >
+                            Hapus Semua Notifikasi
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-800">
                   <div className="text-right hidden sm:block">
                     <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{user?.fullName || 'User'}</p>
