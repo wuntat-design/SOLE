@@ -29,11 +29,18 @@ export function getStoredVideos() {
   const saved = localStorage.getItem('bbgtk_youtube_videos')
   if (saved) {
     try {
-      return JSON.parse(saved)
+      const parsed = JSON.parse(saved)
+      // Pastikan cache memiliki video terbaru (misal Sekampadi 62 / ID video teratas)
+      const hasLatest = parsed && parsed.length >= defaultVideos.length && parsed.some(v => v.youtubeId === defaultVideos[0].youtubeId)
+      if (hasLatest) {
+        return parsed
+      }
     } catch {
-      return defaultVideos
+      // Fallback jika parse error
     }
   }
+  // Update cache dengan dataset terbaru yang berisi Sekampadi 59-62 & video BBGTK
+  localStorage.setItem('bbgtk_youtube_videos', JSON.stringify(defaultVideos))
   return defaultVideos
 }
 
@@ -43,47 +50,59 @@ export function getStoredLastSynced() {
 
 export async function fetchYouTubeFeedFromRSS(channelId = BBGTK_CHANNEL_ID) {
   const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`
-  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`
+  const proxies = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`,
+    `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`
+  ]
 
-  try {
-    const res = await fetch(proxyUrl)
-    if (!res.ok) throw new Error(`HTTP error ${res.status}`)
-    const xmlText = await res.text()
+  for (const proxyUrl of proxies) {
+    try {
+      const res = await fetch(proxyUrl)
+      if (!res.ok) continue
+      const xmlText = await res.text()
 
-    const entries = xmlText.match(/<entry>[\s\S]*?<\/entry>/g) || []
-    if (entries.length === 0) return defaultVideos
+      const entries = xmlText.match(/<entry>[\s\S]*?<\/entry>/g) || []
+      if (entries.length === 0) continue
 
-    const parsedVideos = entries.map((entry, idx) => {
-      const videoIdMatch = entry.match(/<yt:videoId>(.*?)<\/yt:videoId>/)
-      const titleMatch = entry.match(/<title>(.*?)<\/title>/)
-      const publishedMatch = entry.match(/<published>(.*?)<\/published>/)
+      const parsedVideos = entries.map((entry, idx) => {
+        const videoIdMatch = entry.match(/<yt:videoId>(.*?)<\/yt:videoId>/)
+        const titleMatch = entry.match(/<title>(.*?)<\/title>/)
+        const publishedMatch = entry.match(/<published>(.*?)<\/published>/)
 
-      const title = titleMatch ? titleMatch[1] : 'Video YouTube'
-      const category = detectCategory(title)
-      const pubDate = publishedMatch ? new Date(publishedMatch[1]) : new Date()
+        const title = titleMatch ? titleMatch[1] : 'Video YouTube'
+        const category = detectCategory(title)
+        const pubDate = publishedMatch ? new Date(publishedMatch[1]) : new Date()
 
-      const formattedDate = pubDate.toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
+        const formattedDate = pubDate.toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        })
+
+        return {
+          id: idx + 1,
+          title,
+          category,
+          categoryColor: categoryStyles[category] || categoryStyles.Umum,
+          youtubeId: videoIdMatch ? videoIdMatch[1] : '',
+          date: formattedDate,
+          views: 'YouTube RSS',
+        }
       })
 
-      return {
-        id: idx + 1,
-        title,
-        category,
-        categoryColor: categoryStyles[category] || categoryStyles.Umum,
-        youtubeId: videoIdMatch ? videoIdMatch[1] : '',
-        date: formattedDate,
-        views: 'YouTube RSS',
-      }
-    })
+      // Gabungkan hasil fetch RSS dengan defaultVideos agar episode Sekampadi & video curated tidak hilang
+      const existingIds = new Set(parsedVideos.map(v => v.youtubeId))
+      const extraVideos = defaultVideos.filter(v => !existingIds.has(v.youtubeId))
+      const combined = [...parsedVideos, ...extraVideos].map((v, i) => ({ ...v, id: i + 1 }))
 
-    return parsedVideos
-  } catch (err) {
-    console.warn('Gagal mengambil RSS feed YouTube, menggunakan data default:', err)
-    return defaultVideos
+      return combined
+    } catch {
+      continue
+    }
   }
+
+  // Jika proxy tidak merespon, kembalikan defaultVideos terbaru
+  return defaultVideos
 }
 
 export async function syncYouTubeFeed() {
