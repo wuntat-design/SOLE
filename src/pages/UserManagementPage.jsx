@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { syncYouTubeFeed } from '../services/youtubeService';
 import { 
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell 
 } from 'recharts';
@@ -12,6 +13,18 @@ export default function UserManagementPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editUser, setEditUser] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleAdminSync = async () => {
+    setIsSyncing(true);
+    const result = await syncYouTubeFeed();
+    if (result.success) {
+      alert(`✅ Berhasil menyinkronkan ${result.count} video dari channel YouTube BBGTK!`);
+    } else {
+      alert('❌ Gagal melakukan sinkronisasi YouTube.');
+    }
+    setIsSyncing(false);
+  };
   const [usersList, setUsersList] = useState([
     { id: 1, name: 'Budi Hartono', email: 'budi.h@edu.jateng.go.id', role: 'Super Admin', agency: 'SMAN 1 Semarang', city: 'Kota Semarang', active: true },
     { id: 2, name: 'Siti Aminah', email: 'siti.aminah@edu.jateng.go.id', role: 'Moderator', agency: 'SMPN 3 Solo', city: 'Surakarta', active: true },
@@ -34,6 +47,19 @@ export default function UserManagementPage() {
     setUsersList(prev => [...prev, newUser]);
     setShowAddModal(false);
     setShowPassword(false);
+  };
+
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetTarget, setResetTarget] = useState(null);
+  const [newPasswordInput, setNewPasswordInput] = useState('');
+
+  const handleResetPasswordSubmit = (e) => {
+    e.preventDefault();
+    if (!newPasswordInput.trim()) return;
+    alert(`✅ Password untuk pengguna "${resetTarget.name}" berhasil di-reset!`);
+    setShowResetModal(false);
+    setResetTarget(null);
+    setNewPasswordInput('');
   };
 
   const handleEditUser = (e) => {
@@ -104,9 +130,19 @@ export default function UserManagementPage() {
           <div className="text-sm text-slate-500 font-medium mb-1">Praktik Tertunda (Pending)</div>
           <div className="text-3xl font-black text-amber-500">12</div>
         </div>
-        <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700">
-          <div className="text-sm text-slate-500 font-medium mb-1">Total Webinar Tersedia</div>
-          <div className="text-3xl font-black text-emerald-500">28</div>
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+          <div>
+            <div className="text-sm text-slate-500 font-medium mb-1">Total Webinar Tersedia</div>
+            <div className="text-3xl font-black text-emerald-500">28</div>
+          </div>
+          <button
+            onClick={handleAdminSync}
+            disabled={isSyncing}
+            className="mt-3 flex items-center justify-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg shadow transition-all cursor-pointer disabled:opacity-50"
+          >
+            <span className={`material-symbols-outlined text-sm ${isSyncing ? 'animate-spin' : ''}`}>sync</span>
+            {isSyncing ? 'Syncing...' : 'Sync YouTube'}
+          </button>
         </div>
       </div>
 
@@ -258,10 +294,13 @@ export default function UserManagementPage() {
                   </td>
                   <td className="px-8 py-6 text-right">
                     <div className="flex justify-end items-center gap-2">
-                      <button onClick={() => { setEditUser(usr); setShowEditModal(true); }} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-primary transition-all cursor-pointer">
+                      <button onClick={() => { setEditUser(usr); setShowEditModal(true); }} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-primary transition-all cursor-pointer" title="Edit Profil">
                         <span className="material-symbols-outlined text-lg">edit_square</span>
                       </button>
-                      <button onClick={() => handleDeleteUser(usr.id)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-red-500 transition-all cursor-pointer">
+                      <button onClick={() => { setResetTarget(usr); setNewPasswordInput(''); setShowResetModal(true); }} className="p-2 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg text-amber-500 transition-all cursor-pointer" title="Reset Password">
+                        <span className="material-symbols-outlined text-lg">key</span>
+                      </button>
+                      <button onClick={() => handleDeleteUser(usr.id)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-red-500 transition-all cursor-pointer" title="Hapus Pengguna">
                         <span className="material-symbols-outlined text-lg">delete</span>
                       </button>
                     </div>
@@ -458,6 +497,49 @@ export default function UserManagementPage() {
                 <button type="submit" className="px-6 py-2.5 rounded-lg bg-primary text-white font-bold text-sm hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all flex items-center gap-2 cursor-pointer">
                   <span className="material-symbols-outlined text-sm">save</span>
                   Simpan Perubahan
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Password Modal */}
+      {showResetModal && resetTarget && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => { setShowResetModal(false); setResetTarget(null); }}>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600">
+                  <span className="material-symbols-outlined">key</span>
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">Reset Password</h2>
+                  <p className="text-xs text-slate-500">Pengguna: <span className="font-bold text-primary">{resetTarget.name}</span></p>
+                </div>
+              </div>
+              <button onClick={() => { setShowResetModal(false); setResetTarget(null); }} className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center cursor-pointer">
+                <span className="material-symbols-outlined text-slate-400">close</span>
+              </button>
+            </div>
+            <form onSubmit={handleResetPasswordSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="text-xs uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">Password Baru</label>
+                <input
+                  type="password"
+                  required
+                  value={newPasswordInput}
+                  onChange={(e) => setNewPasswordInput(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:ring-2 focus:ring-amber-500 dark:text-white"
+                  placeholder="Masukkan password baru untuk pengguna"
+                  autoFocus
+                />
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => { setShowResetModal(false); setResetTarget(null); }} className="px-6 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer dark:text-white">Batal</button>
+                <button type="submit" className="px-6 py-2.5 rounded-lg bg-amber-500 text-white font-bold text-sm hover:bg-amber-600 shadow-lg shadow-amber-500/20 transition-all flex items-center gap-2 cursor-pointer">
+                  <span className="material-symbols-outlined text-sm">key</span>
+                  Reset Password
                 </button>
               </div>
             </form>

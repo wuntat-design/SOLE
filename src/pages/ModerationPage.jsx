@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { syncYouTubeFeed, getStoredLastSynced } from '../services/youtubeService';
 
 const initialPosts = [
   {
@@ -89,6 +90,22 @@ export default function ModerationPage() {
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectTarget, setRejectTarget] = useState(null);
   const [rejectNote, setRejectNote] = useState('');
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncNotice, setSyncNotice] = useState(null);
+  const [lastSynced, setLastSynced] = useState(getStoredLastSynced);
+
+  const handleYouTubeSync = async () => {
+    setIsSyncing(true);
+    setSyncNotice(null);
+    const result = await syncYouTubeFeed();
+    if (result.success) {
+      setLastSynced(result.time);
+      setSyncNotice(`✅ Berhasil menyinkronkan ${result.count} video dari channel YouTube BBGTK!`);
+    } else {
+      setSyncNotice('❌ Gagal melakukan sinkronisasi dengan channel YouTube.');
+    }
+    setIsSyncing(false);
+  };
 
   // Synchronize with localStorage
   useEffect(() => {
@@ -172,14 +189,41 @@ export default function ModerationPage() {
       <div className="flex flex-col gap-6 mb-8">
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-50">Moderasi Konten</h1>
-            <p className="text-slate-500 mt-1">Tinjau dan kelola kiriman praktik baik dari pengguna.</p>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-50">Moderasi Konten</h1>
+              <button
+                onClick={handleYouTubeSync}
+                disabled={isSyncing}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-600/20 transition-all cursor-pointer disabled:opacity-50"
+                title="Sinkronkan video dari channel YouTube BBGTK Jawa Tengah"
+              >
+                <span className={`material-symbols-outlined text-sm ${isSyncing ? 'animate-spin' : ''}`}>
+                  sync
+                </span>
+                {isSyncing ? 'Syncing RSS...' : 'Sync YouTube'}
+              </button>
+            </div>
+            <p className="text-slate-500 mt-1">
+              Tinjau dan kelola kiriman praktik baik dari pengguna.
+              {lastSynced && (
+                <span className="ml-2 inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                  ✓ RSS Synced: {lastSynced}
+                </span>
+              )}
+            </p>
           </div>
           <div className="flex bg-slate-200 dark:bg-slate-800 p-1 rounded-xl w-full md:w-auto overflow-x-auto hide-scrollbar">
             <button className="px-6 py-2 rounded-lg bg-white dark:bg-slate-700 shadow-sm text-sm font-bold text-primary whitespace-nowrap cursor-pointer">Verifikasi Postingan</button>
             <button className="px-6 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 whitespace-nowrap cursor-pointer">Verifikasi Komentar</button>
           </div>
         </div>
+
+        {syncNotice && (
+          <div className="bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 p-3 rounded-xl flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-300">
+            <span>{syncNotice}</span>
+            <button onClick={() => setSyncNotice(null)} className="text-emerald-600 hover:text-emerald-800 font-bold ml-4">✕</button>
+          </div>
+        )}
 
         {/* Status Filter */}
         <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-2">

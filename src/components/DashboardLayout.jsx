@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { syncYouTubeFeed } from '../services/youtubeService'
 
 export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isSyncing, setIsSyncing] = useState(false)
   const location = useLocation()
   const path = location.pathname
   
@@ -12,6 +14,17 @@ export default function DashboardLayout({ children }) {
   // Mock role untuk simulasi. 
   const userRole = user?.role || 'user'
 
+  const handleAdminSync = async () => {
+    setIsSyncing(true)
+    const result = await syncYouTubeFeed()
+    if (result.success) {
+      alert(`✅ Berhasil menyinkronkan ${result.count} video dari YouTube!`)
+    } else {
+      alert('❌ Gagal melakukan sinkronisasi YouTube.')
+    }
+    setIsSyncing(false)
+  }
+
   return (
     <div className="flex h-screen overflow-hidden bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
       {/* Side Navigation */}
@@ -19,16 +32,12 @@ export default function DashboardLayout({ children }) {
         <div className="p-6 flex flex-col gap-8 h-full min-w-[256px]">
           {/* Brand Profile */}
           <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white overflow-hidden shadow-sm">
+            <div className="h-12 bg-white dark:bg-slate-800 p-2 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-sm">
               <img
-                alt="BBGTK Logo"
-                className="object-cover w-full h-full"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmR0Ic0R_7bZ1vwvBgVoJHLNbfu0o3sSu37NnmTCKaT8qSTHdOuqX3IatQ7gWBc053eP2XmLDomwVoKfK8SmHCcHOqChhaUBGrFrXY5TYA3FU8KdsOf15WrW7vQucr-KQ6yl3lVNiOdFW_DF4QP8x1c_ocWpuJCsibjOLrogskdFxQq52PqJjSQiHOKi64Mn7DvOUrHFyisUGJ2iZ7I9ftfSVyD5uNBvC6EDpB246Astr6WfH2UX2BDl_qWayGNmRlJEqWh6N6Lhms"
+                alt="Logo"
+                className="h-full object-contain"
+                src="/logoAsset7.png"
               />
-            </div>
-            <div className="flex flex-col">
-              <h1 className="text-sm font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-tight">BBGTK Provinsi Jawa Tengah</h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Teacher Community</p>
             </div>
           </Link>
 
@@ -78,6 +87,14 @@ export default function DashboardLayout({ children }) {
             )}
             {(userRole === 'admin' || userRole === 'superadmin') && (
               <>
+                <button 
+                  onClick={handleAdminSync}
+                  disabled={isSyncing}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors group cursor-pointer disabled:opacity-50 text-left"
+                >
+                  <span className={`material-symbols-outlined text-red-600 dark:text-red-400 ${isSyncing ? 'animate-spin' : ''}`}>sync</span>
+                  <span className="text-sm font-semibold">{isSyncing ? 'Syncing...' : 'Sync YouTube'}</span>
+                </button>
                 <a href="#" className="flex items-center gap-3 px-3 py-2.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors group">
                   <span className="material-symbols-outlined text-slate-500 group-hover:text-primary">folder_open</span>
                   <span className="text-sm font-medium">Resources</span>

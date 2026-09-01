@@ -1,24 +1,35 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Footer from '../components/Footer'
-import initialVideos from '../data/youtubeVideos.json'
-import { fetchYouTubeFeedFromRSS } from '../services/youtubeService'
+import { getStoredVideos, getStoredLastSynced, syncYouTubeFeed } from '../services/youtubeService'
 
 export default function WebinarPage() {
-  const { isLoggedIn } = useAuth()
-  const [videoList, setVideoList] = useState(initialVideos)
+  const { user, isLoggedIn } = useAuth()
+  const isAdmin = user?.role === 'admin' || user?.role === 'superadmin'
+  const [videoList, setVideoList] = useState(getStoredVideos)
   const [isSyncing, setIsSyncing] = useState(false)
-  const [lastSynced, setLastSynced] = useState(null)
+  const [lastSynced, setLastSynced] = useState(getStoredLastSynced)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('Semua')
 
+  useEffect(() => {
+    const handleSyncedEvent = (e) => {
+      if (e.detail?.videos) {
+        setVideoList(e.detail.videos)
+        setLastSynced(e.detail.time)
+      }
+    }
+    window.addEventListener('youtube_synced', handleSyncedEvent)
+    return () => window.removeEventListener('youtube_synced', handleSyncedEvent)
+  }, [])
+
   const handleSync = async () => {
     setIsSyncing(true)
-    const freshVideos = await fetchYouTubeFeedFromRSS()
-    if (freshVideos && freshVideos.length > 0) {
-      setVideoList(freshVideos)
-      setLastSynced(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }))
+    const result = await syncYouTubeFeed()
+    if (result.success) {
+      setVideoList(result.videos)
+      setLastSynced(result.time)
     }
     setIsSyncing(false)
   }
@@ -40,16 +51,18 @@ export default function WebinarPage() {
                 <h1 className="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
                   Perpustakaan Webinar
                 </h1>
-                <button
-                  onClick={handleSync}
-                  disabled={isSyncing}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-red-600 text-white shadow-md shadow-red-600/20 hover:bg-red-700 transition-all cursor-pointer disabled:opacity-50"
-                >
-                  <span className={`material-symbols-outlined text-base ${isSyncing ? 'animate-spin' : ''}`}>
-                    sync
-                  </span>
-                  {isSyncing ? 'Syncing...' : 'Sync Data YouTube'}
-                </button>
+                {isAdmin && (
+                  <button
+                    onClick={handleSync}
+                    disabled={isSyncing}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-red-600 text-white shadow-md shadow-red-600/20 hover:bg-red-700 transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    <span className={`material-symbols-outlined text-base ${isSyncing ? 'animate-spin' : ''}`}>
+                      sync
+                    </span>
+                    {isSyncing ? 'Syncing...' : 'Sync Data YouTube'}
+                  </button>
+                )}
               </div>
               <p className="text-slate-500 dark:text-slate-400 text-lg font-normal leading-normal max-w-2xl">
                 Akses kembali rekaman webinar pendidikan berkualitas dari kanal resmi BBGTK Jawa Tengah untuk peningkatan kompetensi berkelanjutan.

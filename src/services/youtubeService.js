@@ -25,6 +25,22 @@ function detectCategory(title) {
   return 'Umum'
 }
 
+export function getStoredVideos() {
+  const saved = localStorage.getItem('bbgtk_youtube_videos')
+  if (saved) {
+    try {
+      return JSON.parse(saved)
+    } catch {
+      return defaultVideos
+    }
+  }
+  return defaultVideos
+}
+
+export function getStoredLastSynced() {
+  return localStorage.getItem('bbgtk_youtube_last_synced') || null
+}
+
 export async function fetchYouTubeFeedFromRSS(channelId = BBGTK_CHANNEL_ID) {
   const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`
   const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`
@@ -69,3 +85,16 @@ export async function fetchYouTubeFeedFromRSS(channelId = BBGTK_CHANNEL_ID) {
     return defaultVideos
   }
 }
+
+export async function syncYouTubeFeed() {
+  const freshVideos = await fetchYouTubeFeedFromRSS()
+  const now = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+  if (freshVideos && freshVideos.length > 0) {
+    localStorage.setItem('bbgtk_youtube_videos', JSON.stringify(freshVideos))
+    localStorage.setItem('bbgtk_youtube_last_synced', now)
+    window.dispatchEvent(new CustomEvent('youtube_synced', { detail: { videos: freshVideos, time: now } }))
+    return { success: true, count: freshVideos.length, time: now, videos: freshVideos }
+  }
+  return { success: false, count: 0, time: now, videos: [] }
+}
+

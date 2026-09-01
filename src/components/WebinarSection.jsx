@@ -1,8 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import initialVideos from '../data/youtubeVideos.json'
-import { fetchYouTubeFeedFromRSS } from '../services/youtubeService'
+import { getStoredVideos, getStoredLastSynced, syncYouTubeFeed } from '../services/youtubeService'
 
 function WebinarCard({ webinar }) {
   const { isLoggedIn } = useAuth()
@@ -53,16 +52,29 @@ function WebinarCard({ webinar }) {
 }
 
 export default function WebinarSection() {
-  const [webinars, setWebinars] = useState(initialVideos.slice(0, 4))
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin' || user?.role === 'superadmin'
+  const [webinars, setWebinars] = useState(() => getStoredVideos().slice(0, 4))
   const [isSyncing, setIsSyncing] = useState(false)
-  const [lastSynced, setLastSynced] = useState(null)
+  const [lastSynced, setLastSynced] = useState(getStoredLastSynced)
+
+  useEffect(() => {
+    const handleSyncedEvent = (e) => {
+      if (e.detail?.videos) {
+        setWebinars(e.detail.videos.slice(0, 4))
+        setLastSynced(e.detail.time)
+      }
+    }
+    window.addEventListener('youtube_synced', handleSyncedEvent)
+    return () => window.removeEventListener('youtube_synced', handleSyncedEvent)
+  }, [])
 
   const handleSync = async () => {
     setIsSyncing(true)
-    const freshVideos = await fetchYouTubeFeedFromRSS()
-    if (freshVideos && freshVideos.length > 0) {
-      setWebinars(freshVideos.slice(0, 4))
-      setLastSynced(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }))
+    const result = await syncYouTubeFeed()
+    if (result.success) {
+      setWebinars(result.videos.slice(0, 4))
+      setLastSynced(result.time)
     }
     setIsSyncing(false)
   }
@@ -73,17 +85,19 @@ export default function WebinarSection() {
         <div>
           <div className="flex items-center gap-3">
             <h2 className="text-slate-900 dark:text-slate-100 text-2xl md:text-3xl font-bold">Webinar Terbaru</h2>
-            <button
-              onClick={handleSync}
-              disabled={isSyncing}
-              title="Sync data dari RSS Feed YouTube BBGTK"
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400 hover:bg-red-500 hover:text-white transition-all cursor-pointer disabled:opacity-50"
-            >
-              <span className={`material-symbols-outlined text-sm ${isSyncing ? 'animate-spin' : ''}`}>
-                sync
-              </span>
-              {isSyncing ? 'Syncing RSS...' : 'Sync YouTube'}
-            </button>
+            {isAdmin && (
+              <button
+                onClick={handleSync}
+                disabled={isSyncing}
+                title="Sync data dari RSS Feed YouTube BBGTK"
+                className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400 hover:bg-red-500 hover:text-white transition-all cursor-pointer disabled:opacity-50"
+              >
+                <span className={`material-symbols-outlined text-sm ${isSyncing ? 'animate-spin' : ''}`}>
+                  sync
+                </span>
+                {isSyncing ? 'Syncing RSS...' : 'Sync YouTube'}
+              </button>
+            )}
           </div>
           <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm flex items-center gap-2">
             Update pengetahuan dari para ahli di bidang pendidikan

@@ -6,6 +6,48 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
+  const [googleEmailInput, setGoogleEmailInput] = useState('');
+  const [googleError, setGoogleError] = useState('');
+
+  // Validasi format email domain @*.belajar.id
+  const isBelajarIdEmail = (email) => {
+    const belajarIdRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9-]+\.)*belajar\.id$/i;
+    return belajarIdRegex.test(email);
+  };
+
+  const handleGoogleLoginSubmit = (e) => {
+    e.preventDefault();
+    const email = googleEmailInput.trim();
+    if (!isBelajarIdEmail(email)) {
+      setGoogleError('Email harus menggunakan akun resmi belajar.id (contoh: nama@sd.belajar.id, nama@dikbud.belajar.id)');
+      return;
+    }
+
+    setGoogleError('');
+    setShowGoogleModal(false);
+
+    // Tentukan role berdasarkan kata kunci di email
+    let role = "user";
+    let fullName = email.split('@')[0].replace(/[._]/g, ' ');
+    fullName = fullName.charAt(0).toUpperCase() + fullName.slice(1);
+    
+    if (email.includes("superadmin")) {
+      role = "superadmin";
+    } else if (email.includes("admin")) {
+      role = "admin";
+    }
+
+    login({
+      firstName: fullName.split(' ')[0],
+      fullName: `${fullName} (akun belajar.id)`,
+      email: email,
+      school: 'Akun Pembelajaran (belajar.id)',
+      role: role
+    });
+
+    navigate("/");
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -47,10 +89,9 @@ export default function LoginPage() {
 
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-12">
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
-                <span className="material-symbols-outlined text-primary text-3xl">school</span>
+              <div className="h-14 bg-white p-2 rounded-xl flex items-center justify-center shadow-lg">
+                <img src="/logoAsset7.png" alt="Logo" className="h-full object-contain" />
               </div>
-              <span className="text-white font-bold tracking-tight text-2xl">BBGTK Provinsi Jawa Tengah</span>
             </div>
             <h1 className="text-white text-5xl font-black leading-tight tracking-tighter mb-6">
               Selamat datang di Educorner
@@ -138,15 +179,14 @@ export default function LoginPage() {
             </div>
 
             {/* Social Logins */}
-            <div className="grid grid-cols-3 gap-3">
-              <button className="flex items-center justify-center py-3 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all border border-outline-variant/10 group cursor-pointer">
-                <img alt="Google Logo" className="w-6 h-6 grayscale group-hover:grayscale-0 transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZMOgvgBuGOGQH-f_whxhn9F6yzANEWJWvpJw2Ptagb0tnizCvUBVgsGAagtq4o8jJHBJhcqA1m95rW7G1wJ3pUxGyJrLzQ5o-l6yZvfVASmOweAqZJ7-UDXQdy6ihU7L29gDKywvmfNseJdfHvMF9QhLIWthDCs3pYF_PF0vAywx6NGh_by9wiKtgmqWwY1LEsAkD53tS4deF4cwf1RjkPh1OVNtLUK-e3TcQmd-eKkSk3g7vj-a6uUFHvoV5Y38SCMyscU7pdqor" />
-              </button>
-              <button className="flex items-center justify-center py-3 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all border border-outline-variant/10 group cursor-pointer">
-                <span className="material-symbols-outlined text-on-surface text-2xl opacity-60 group-hover:opacity-100" style={{ fontVariationSettings: "'FILL' 1" }}>laptop_mac</span>
-              </button>
-              <button className="flex items-center justify-center py-3 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all border border-outline-variant/10 group cursor-pointer">
-                <span className="material-symbols-outlined text-[#00a1f1] text-2xl opacity-60 group-hover:opacity-100" style={{ fontVariationSettings: "'FILL' 1" }}>grid_view</span>
+            <div className="grid grid-cols-1 gap-3">
+              <button 
+                type="button"
+                onClick={() => { setGoogleEmailInput(''); setGoogleError(''); setShowGoogleModal(true); }}
+                className="flex items-center justify-center gap-3 py-3.5 px-4 bg-surface-container-low hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all border border-slate-200 dark:border-slate-700 cursor-pointer shadow-sm"
+              >
+                <img alt="Google Logo" className="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZMOgvgBuGOGQH-f_whxhn9F6yzANEWJWvpJw2Ptagb0tnizCvUBVgsGAagtq4o8jJHBJhcqA1m95rW7G1wJ3pUxGyJrLzQ5o-l6yZvfVASmOweAqZJ7-UDXQdy6ihU7L29gDKywvmfNseJdfHvMF9QhLIWthDCs3pYF_PF0vAywx6NGh_by9wiKtgmqWwY1LEsAkD53tS4deF4cwf1RjkPh1OVNtLUK-e3TcQmd-eKkSk3g7vj-a6uUFHvoV5Y38SCMyscU7pdqor" />
+                <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Masuk dengan Akun Google (@*.belajar.id)</span>
               </button>
             </div>
 
@@ -159,6 +199,66 @@ export default function LoginPage() {
           </div>
         </section>
       </main>
+
+      {/* Google belajar.id Modal */}
+      {showGoogleModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowGoogleModal(false)}>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl p-6" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-3">
+                <img alt="Google Logo" className="w-6 h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZMOgvgBuGOGQH-f_whxhn9F6yzANEWJWvpJw2Ptagb0tnizCvUBVgsGAagtq4o8jJHBJhcqA1m95rW7G1wJ3pUxGyJrLzQ5o-l6yZvfVASmOweAqZJ7-UDXQdy6ihU7L29gDKywvmfNseJdfHvMF9QhLIWthDCs3pYF_PF0vAywx6NGh_by9wiKtgmqWwY1LEsAkD53tS4deF4cwf1RjkPh1OVNtLUK-e3TcQmd-eKkSk3g7vj-a6uUFHvoV5Y38SCMyscU7pdqor" />
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Sign in with Google</h3>
+                  <p className="text-xs text-slate-500">Gunakan Akun Pembelajaran (belajar.id)</p>
+                </div>
+              </div>
+              <button onClick={() => setShowGoogleModal(false)} className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center cursor-pointer">
+                <span className="material-symbols-outlined text-slate-400">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleGoogleLoginSubmit} className="space-y-4">
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">Email Google belajar.id</label>
+                <input
+                  type="email"
+                  required
+                  value={googleEmailInput}
+                  onChange={(e) => { setGoogleEmailInput(e.target.value); setGoogleError(''); }}
+                  placeholder="contoh: ahmad@guru.sd.belajar.id"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary dark:text-white"
+                  autoFocus
+                />
+                <p className="text-[11px] text-slate-400 mt-1">
+                  Mendukung domain: <code className="text-primary font-mono">@dikbud.belajar.id</code>, <code className="text-primary font-mono">@sd.belajar.id</code>, <code className="text-primary font-mono">@smp.belajar.id</code>, <code className="text-primary font-mono">@sma.belajar.id</code>, <code className="text-primary font-mono">@smk.belajar.id</code>, dll.
+                </p>
+              </div>
+
+              {googleError && (
+                <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 p-3 rounded-xl text-xs text-red-600 dark:text-red-400">
+                  {googleError}
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowGoogleModal(false)}
+                  className="px-5 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer dark:text-white"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 shadow-md cursor-pointer"
+                >
+                  Lanjutkan Login
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Simple Footer */}
       <footer className="w-full max-w-[1200px] flex flex-col md:flex-row justify-between items-center py-8 px-6 text-outline font-medium text-sm mt-auto">
