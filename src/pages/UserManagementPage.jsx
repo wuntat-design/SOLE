@@ -5,15 +5,40 @@ import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell 
 } from 'recharts';
 
+const defaultUsersList = [
+  { id: 1, name: 'Budi Hartono', email: 'budi.h@edu.jateng.go.id', role: 'Super Admin', agency: 'SMAN 1 Semarang', city: 'Kota Semarang', active: true },
+  { id: 2, name: 'Siti Aminah', email: 'siti.aminah@edu.jateng.go.id', role: 'Moderator', agency: 'SMPN 3 Solo', city: 'Surakarta', active: true },
+  { id: 3, name: 'Eko Prasetyo', email: 'eko_p@edu.jateng.go.id', role: 'User', agency: 'SMKN 1 Magelang', city: 'Magelang', active: false },
+  { id: 4, name: 'Dewi Anggraeni', email: 'dewi.ang@edu.jateng.go.id', role: 'User', agency: 'SDN 02 Brebes', city: 'Brebes', active: true }
+];
+
 export default function UserManagementPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('ROLES');
+  const [roleFilter, setRoleFilter] = useState('All');
   const [auditLogs, setAuditLogs] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editUser, setEditUser] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+
+  const [usersList, setUsersList] = useState(() => {
+    const saved = localStorage.getItem('bbgtk_users_list');
+    return saved ? JSON.parse(saved) : defaultUsersList;
+  });
+
+  const saveUsersList = (newUsers) => {
+    setUsersList(newUsers);
+    localStorage.setItem('bbgtk_users_list', JSON.stringify(newUsers));
+  };
+
+  const handleRoleChange = (userId, newRole) => {
+    const targetUser = usersList.find(u => u.id === userId);
+    const updated = usersList.map(u => u.id === userId ? { ...u, role: newRole } : u);
+    saveUsersList(updated);
+    alert(`✅ Hak akses untuk "${targetUser?.name}" berhasil diubah menjadi ${newRole}!`);
+  };
 
   const handleAdminSync = async () => {
     setIsSyncing(true);
@@ -25,12 +50,6 @@ export default function UserManagementPage() {
     }
     setIsSyncing(false);
   };
-  const [usersList, setUsersList] = useState([
-    { id: 1, name: 'Budi Hartono', email: 'budi.h@edu.jateng.go.id', role: 'Super Admin', agency: 'SMAN 1 Semarang', city: 'Kota Semarang', active: true },
-    { id: 2, name: 'Siti Aminah', email: 'siti.aminah@edu.jateng.go.id', role: 'Moderator', agency: 'SMPN 3 Solo', city: 'Surakarta', active: true },
-    { id: 3, name: 'Eko Prasetyo', email: 'eko_p@edu.jateng.go.id', role: 'User', agency: 'SMKN 1 Magelang', city: 'Magelang', active: false },
-    { id: 4, name: 'Dewi Anggraeni', email: 'dewi.ang@edu.jateng.go.id', role: 'User', agency: 'SDN 02 Brebes', city: 'Brebes', active: true }
-  ]);
 
   const handleAddUser = (e) => {
     e.preventDefault();
@@ -44,7 +63,7 @@ export default function UserManagementPage() {
       city: form.kota.value,
       active: true
     };
-    setUsersList(prev => [...prev, newUser]);
+    saveUsersList([...usersList, newUser]);
     setShowAddModal(false);
     setShowPassword(false);
   };
@@ -72,14 +91,14 @@ export default function UserManagementPage() {
       agency: form.edit_sekolah.value,
       city: form.edit_kota.value,
     };
-    setUsersList(prev => prev.map(u => u.id === editUser.id ? updatedUser : u));
+    saveUsersList(usersList.map(u => u.id === editUser.id ? updatedUser : u));
     setShowEditModal(false);
     setEditUser(null);
   };
 
   const handleDeleteUser = (id) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus pengguna ini?')) {
-      setUsersList(prev => prev.filter(u => u.id !== id));
+      saveUsersList(usersList.filter(u => u.id !== id));
     }
   };
 
@@ -212,76 +231,79 @@ export default function UserManagementPage() {
     </div>
   );
 
-  const renderRolesTab = () => (
-    <div className="space-y-6">
-      {/* Advanced Filter Bar */}
-      <div className="bg-white dark:bg-slate-800 rounded-full p-2 flex flex-wrap items-center gap-2 border border-slate-200 dark:border-slate-700 shadow-sm">
-        <div className="flex-1 flex items-center gap-4 px-4">
-          <span className="material-symbols-outlined text-slate-400">filter_list</span>
-          <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">Filter by:</span>
-          <div className="flex gap-2">
-            <select className="bg-slate-50 dark:bg-slate-900 border-none rounded-full text-sm font-medium px-4 py-1.5 focus:ring-primary/20 outline-none cursor-pointer">
-              <option>Role: All</option>
-              <option>Super Admin</option>
-              <option>Moderator</option>
-              <option>User</option>
-            </select>
-            <select className="bg-slate-50 dark:bg-slate-900 border-none rounded-full text-sm font-medium px-4 py-1.5 focus:ring-primary/20 outline-none cursor-pointer hidden md:block">
-              <option>School Level: All</option>
-              <option>SD</option>
-              <option>SMP</option>
-              <option>SMA</option>
-              <option>SMK</option>
-            </select>
-          </div>
-        </div>
-        <button onClick={() => setShowAddModal(true)} className="bg-slate-50 dark:bg-slate-700 text-primary px-6 py-2 rounded-full font-bold text-sm hover:bg-primary hover:text-white transition-all flex items-center gap-2 cursor-pointer">
-          <span className="material-symbols-outlined text-lg">add_circle</span>
-          Add User
-        </button>
-      </div>
+  const renderRolesTab = () => {
+    const displayedUsers = roleFilter === 'All' 
+      ? usersList 
+      : usersList.filter(u => u.role.toLowerCase().includes(roleFilter.toLowerCase()));
 
-      {/* User Data Grid */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[800px]">
-            <thead>
-              <tr className="bg-slate-50 dark:bg-slate-900/50">
-                <th className="px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500">Curator Profile</th>
-                <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500">Role Mapping</th>
-                <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500">Origin School</th>
-                <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500">Status</th>
-                <th className="px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
-              {usersList.map((usr) => (
-                <tr key={usr.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/20 transition-colors group">
-                  <td className="px-8 py-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold overflow-hidden text-sm">
-                        {usr.name.charAt(0)}{usr.name.split(' ')[1]?.[0]}
+    return (
+      <div className="space-y-6">
+        {/* Advanced Filter Bar */}
+        <div className="bg-white dark:bg-slate-800 rounded-full p-2 flex flex-wrap items-center gap-2 border border-slate-200 dark:border-slate-700 shadow-sm">
+          <div className="flex-1 flex items-center gap-4 px-4">
+            <span className="material-symbols-outlined text-slate-400">filter_list</span>
+            <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">Filter by:</span>
+            <div className="flex gap-2">
+              <select 
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="bg-slate-50 dark:bg-slate-900 border-none rounded-full text-sm font-medium px-4 py-1.5 focus:ring-primary/20 outline-none cursor-pointer"
+              >
+                <option value="All">Role: Semua</option>
+                <option value="Super Admin">Super Admin</option>
+                <option value="Moderator">Moderator / Admin</option>
+                <option value="User">User Biasa</option>
+              </select>
+            </div>
+          </div>
+          <button onClick={() => setShowAddModal(true)} className="bg-slate-50 dark:bg-slate-700 text-primary px-6 py-2 rounded-full font-bold text-sm hover:bg-primary hover:text-white transition-all flex items-center gap-2 cursor-pointer">
+            <span className="material-symbols-outlined text-lg">add_circle</span>
+            Tambah Pengguna
+          </button>
+        </div>
+
+        {/* User Data Grid */}
+        <div className="bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[800px]">
+              <thead>
+                <tr className="bg-slate-50 dark:bg-slate-900/50">
+                  <th className="px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500">Profil Pengguna</th>
+                  <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500">Pengaturan Role / Akses</th>
+                  <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500">Asal Instansi / Sekolah</th>
+                  <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500">Status</th>
+                  <th className="px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 text-right">Aksi SuperAdmin</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
+                {displayedUsers.map((usr) => (
+                  <tr key={usr.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/20 transition-colors group">
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold overflow-hidden text-sm">
+                          {usr.name.charAt(0)}{usr.name.split(' ')[1]?.[0]}
+                        </div>
+                        <div>
+                          <div className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors">{usr.name}</div>
+                          <div className="text-sm text-slate-500">{usr.email}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors">{usr.name}</div>
-                        <div className="text-sm text-slate-500">{usr.email}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-6">
-                    <select 
-                      className={`px-3 py-1 rounded-full text-xs font-bold tracking-tight border uppercase outline-none appearance-none cursor-pointer ${
-                        usr.role === 'Super Admin' ? 'bg-primary/5 text-primary border-primary/10' :
-                        usr.role === 'Moderator' ? 'bg-amber-500/5 text-amber-600 border-amber-500/10' :
-                        'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
-                      }`}
-                      defaultValue={usr.role}
-                    >
-                      <option value="Super Admin">SUPER ADMIN</option>
-                      <option value="Moderator">MODERATOR</option>
-                      <option value="User">USER</option>
-                    </select>
-                  </td>
+                    </td>
+                    <td className="px-6 py-6">
+                      <select 
+                        value={usr.role}
+                        onChange={(e) => handleRoleChange(usr.id, e.target.value)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold tracking-tight border outline-none cursor-pointer transition-all ${
+                          usr.role === 'Super Admin' ? 'bg-primary/10 text-primary border-primary/20' :
+                          usr.role === 'Moderator' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
+                          'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+                        }`}
+                      >
+                        <option value="Super Admin">⭐ SUPER ADMIN</option>
+                        <option value="Moderator">🛡️ MODERATOR / ADMIN</option>
+                        <option value="User">👤 USER BIASA</option>
+                      </select>
+                    </td>
                   <td className="px-6 py-6">
                     <div className="text-sm font-medium text-slate-900 dark:text-slate-100">{usr.agency}</div>
                     <div className="text-xs text-slate-500 font-medium">{usr.city}</div>
@@ -548,6 +570,7 @@ export default function UserManagementPage() {
       )}
     </div>
   );
+};
 
   const renderReportsTab = () => (
     <div className="space-y-6">

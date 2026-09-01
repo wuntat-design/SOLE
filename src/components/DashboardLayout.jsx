@@ -111,8 +111,8 @@ export default function DashboardLayout({ children }) {
           {userRole === 'superadmin' && (
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
               <Link to="/settings" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group ${path.startsWith('/settings') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
-                <span className={`material-symbols-outlined ${path.startsWith('/settings') ? 'fill-1' : 'text-slate-500 group-hover:text-primary'}`}>settings</span>
-                <span className={`text-sm ${path.startsWith('/settings') ? 'font-semibold' : 'font-medium'}`}>Settings</span>
+                <span className={`material-symbols-outlined ${path.startsWith('/settings') ? 'fill-1' : 'text-slate-500 group-hover:text-primary'}`}>manage_accounts</span>
+                <span className={`text-sm ${path.startsWith('/settings') ? 'font-semibold' : 'font-medium'}`}>Kelola Role & Moderator</span>
               </Link>
             </div>
           )}
