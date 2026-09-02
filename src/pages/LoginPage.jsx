@@ -10,15 +10,25 @@ export default function LoginPage() {
   const [emailInputValue, setEmailInputValue] = useState('');
   const [googleEmailInput, setGoogleEmailInput] = useState('');
   const [googleError, setGoogleError] = useState('');
+  const [formError, setFormError] = useState('');
 
   // Validasi format email domain @*.belajar.id
   const isBelajarIdEmail = (email) => {
+    if (!email) return false;
     const belajarIdRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9-]+\.)*belajar\.id$/i;
-    return belajarIdRegex.test(email);
+    return belajarIdRegex.test(email.trim());
   };
 
   const handleOpenGoogleModal = () => {
     const typedEmail = emailInputValue.trim();
+
+    if (typedEmail && !isBelajarIdEmail(typedEmail) && !typedEmail.includes('admin')) {
+      setFormError('❌ Akses Ditolak: Hanya akun Google dengan domain resmi @*.belajar.id (Kemendikdasmen) yang diizinkan untuk login.');
+      return;
+    }
+
+    setFormError('');
+
     if (typedEmail && isBelajarIdEmail(typedEmail)) {
       // Jika email sudah diisi dan formatnya @*.belajar.id, langsung masuk!
       let role = "user";
@@ -33,14 +43,15 @@ export default function LoginPage() {
         fullName: `${fullName} (akun belajar.id)`,
         email: typedEmail,
         school: 'Akun Pembelajaran (belajar.id)',
-        role: role
+        role: role,
+        method: 'Google (belajar.id)'
       });
       navigate("/");
       return;
     }
 
-    // Jika belum diisi atau bukan format @*.belajar.id, buka modal verifikasi Google
-    setGoogleEmailInput(typedEmail);
+    // Buka modal verifikasi Google belajar.id
+    setGoogleEmailInput(typedEmail || 'pendidik@guru.sd.belajar.id');
     setGoogleError('');
     setShowGoogleModal(true);
   };
@@ -49,7 +60,7 @@ export default function LoginPage() {
     e.preventDefault();
     const email = googleEmailInput.trim();
     if (!isBelajarIdEmail(email)) {
-      setGoogleError('Email harus menggunakan akun resmi belajar.id (contoh: nama@sd.belajar.id, nama@dikbud.belajar.id)');
+      setGoogleError('❌ Akses Ditolak: Email harus menggunakan akun resmi Google belajar.id (contoh: nama@sd.belajar.id, nama@dikbud.belajar.id). Email umum seperti @gmail.com tidak diizinkan.');
       return;
     }
 
@@ -71,7 +82,8 @@ export default function LoginPage() {
       fullName: `${fullName} (akun belajar.id)`,
       email: email,
       school: 'Akun Pembelajaran (belajar.id)',
-      role: role
+      role: role,
+      method: 'Google (belajar.id)'
     });
 
     navigate("/");
@@ -79,8 +91,17 @@ export default function LoginPage() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    const emailInput = e.target.elements[0]?.value || '';
+    const emailInput = emailInputValue.trim() || e.target.elements[0]?.value || '';
     
+    const isBelajarOrAdmin = isBelajarIdEmail(emailInput) || emailInput.includes("admin") || emailInput.includes("superadmin");
+
+    if (!isBelajarOrAdmin) {
+      setFormError('❌ Akses Ditolak: Hanya akun Google dengan domain resmi @*.belajar.id (Kemendikdasmen) yang diizinkan untuk login.');
+      return;
+    }
+
+    setFormError('');
+
     // Auto role assign for demonstration
     let role = "user";
     let fullName = "User Biasa";
@@ -100,7 +121,8 @@ export default function LoginPage() {
       fullName: fullName,
       email: emailInput,
       school: school,
-      role: role
+      role: role,
+      method: 'Formulir Login'
     });
     navigate("/");
   };
@@ -159,20 +181,27 @@ export default function LoginPage() {
 
             <div className="mb-10 text-center lg:text-left">
               <h3 className="text-3xl font-extrabold text-on-surface tracking-tight mb-2">Login Educorner</h3>
-              <p className="text-on-surface-variant font-medium">Akses dashboard kurasi Anda</p>
+              <p className="text-on-surface-variant font-medium">Akses dashboard kurasi & komunitas pendidik</p>
             </div>
+
+            {formError && (
+              <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-2xl flex items-start gap-3 text-xs text-red-700 dark:text-red-300 font-semibold shadow-sm animate-fade-in">
+                <span className="material-symbols-outlined text-red-600 text-lg shrink-0 mt-0.5">gpp_bad</span>
+                <div className="leading-relaxed">{formError}</div>
+              </div>
+            )}
 
             {/* Main Form */}
             <form className="space-y-6" onSubmit={handleLogin}>
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant block ml-1">Email</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant block ml-1">Email Pembelajaran (belajar.id)</label>
                 <div className="relative group">
                   <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">mail</span>
                   <input
                     value={emailInputValue}
-                    onChange={(e) => setEmailInputValue(e.target.value)}
+                    onChange={(e) => { setEmailInputValue(e.target.value); setFormError(''); }}
                     className="w-full pl-12 pr-4 py-4 bg-surface-container-low border-transparent focus:border-primary focus:ring-0 rounded-xl font-medium text-on-surface transition-all placeholder:text-outline-variant outline-none"
-                    placeholder="nama@instansi.sch.id atau nama@sd.belajar.id"
+                    placeholder="contoh: nama@guru.sd.belajar.id"
                     required
                     type="email"
                   />
