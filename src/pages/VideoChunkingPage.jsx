@@ -6,11 +6,34 @@ import youtubeData from '../data/youtubeVideos.json'
 export default function VideoChunkingPage() {
   const { user } = useAuth()
   
-  // Selected Video State
+  // Selected Video & Modal States
   const [selectedVideo, setSelectedVideo] = useState(youtubeData[0])
   const [activeChunkIndex, setActiveChunkIndex] = useState(0)
   const [notes, setNotes] = useState('')
   const [userNotes, setUserNotes] = useState({})
+
+  // Video Picker Modal States
+  const [showPickerModal, setShowPickerModal] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('Semua')
+  const [pickerPage, setPickerPage] = useState(1)
+
+  const itemsPerPage = 6
+
+  // Categories list
+  const categories = ['Semua', 'Sekampadi', 'Sosialisasi', 'Teknologi', 'Pedagogi', 'Inspirasi']
+
+  // Filter videos for picker modal
+  const filteredVideos = youtubeData.filter(v => {
+    const matchesSearch = v.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          v.category?.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesCategory = selectedCategory === 'Semua' || v.category?.toLowerCase().includes(selectedCategory.toLowerCase())
+    return matchesSearch && matchesCategory
+  })
+
+  // Pagination for picker modal
+  const totalPages = Math.ceil(filteredVideos.length / itemsPerPage)
+  const paginatedVideos = filteredVideos.slice((pickerPage - 1) * itemsPerPage, pickerPage * itemsPerPage)
 
   // Generate 10-Minute Chunk Segments for the selected video
   const chunkDurationMinutes = 10
@@ -103,23 +126,18 @@ export default function VideoChunkingPage() {
           </div>
         </div>
 
-        {/* Video Selector Dropdown */}
-        <div className="flex items-center gap-3 shrink-0">
-          <label className="text-xs font-bold text-slate-500 hidden sm:block">Pilih Webinar:</label>
-          <select
-            value={selectedVideo.id}
-            onChange={(e) => {
-              const v = youtubeData.find(item => item.id === e.target.value) || youtubeData[0]
-              setSelectedVideo(v)
-              setActiveChunkIndex(0)
-            }}
-            className="px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-primary max-w-xs truncate"
-          >
-            {youtubeData.map(v => (
-              <option key={v.id} value={v.id}>{v.title}</option>
-            ))}
-          </select>
-        </div>
+        {/* Modern Interactive Video Selector Button */}
+        <button
+          onClick={() => setShowPickerModal(true)}
+          className="flex items-center gap-3 px-5 py-3 bg-primary text-white hover:bg-primary/90 rounded-2xl font-bold text-xs shadow-lg shadow-primary/20 transition-all cursor-pointer shrink-0"
+        >
+          <span className="material-symbols-outlined text-lg">search_hands_free</span>
+          <div className="text-left">
+            <div className="text-[10px] uppercase tracking-wider text-blue-200">Video Aktif:</div>
+            <div className="font-bold truncate max-w-[200px] sm:max-w-[280px] text-white">{selectedVideo.title}</div>
+          </div>
+          <span className="material-symbols-outlined text-base text-blue-200">swap_horiz</span>
+        </button>
       </div>
 
       {/* Main Video & Chunk Navigation Area */}
@@ -246,6 +264,136 @@ export default function VideoChunkingPage() {
         </div>
 
       </div>
+
+      {/* Modern Video Picker Modal with Live Search, Categories, & Pagination */}
+      {showPickerModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs animate-fade-in" onClick={() => setShowPickerModal(false)}>
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-4xl w-full p-6 md:p-8 space-y-6 shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
+                  <span className="material-symbols-outlined text-xl">video_library</span>
+                </div>
+                <div>
+                  <h3 className="font-black text-lg text-slate-900 dark:text-white">Cari & Pilih Video Webinar BBGTK</h3>
+                  <p className="text-xs text-slate-500">Pencarian instan berkecepatan tinggi dari {youtubeData.length}+ video perpustakaan</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowPickerModal(false)}
+                className="w-9 h-9 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            {/* Live Search & Filter Bar */}
+            <div className="space-y-4">
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                <input
+                  type="text"
+                  autoFocus
+                  value={searchQuery}
+                  onChange={(e) => { setSearchQuery(e.target.value); setPickerPage(1); }}
+                  placeholder="Ketik kata kunci judul webinar, seri Sekampadi, topik PJOK, AI, dll..."
+                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-medium outline-none focus:ring-2 focus:ring-primary dark:text-white shadow-inner"
+                />
+              </div>
+
+              {/* Category Filter Pills */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => { setSelectedCategory(cat); setPickerPage(1); }}
+                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer shrink-0 ${
+                      selectedCategory === cat
+                        ? 'bg-primary text-white shadow-md'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Video Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {paginatedVideos.length === 0 ? (
+                <div className="col-span-full py-12 text-center text-slate-400 space-y-2">
+                  <span className="material-symbols-outlined text-4xl">search_off</span>
+                  <p className="text-sm font-bold">Tidak ada video yang cocok dengan kata kunci "{searchQuery}"</p>
+                </div>
+              ) : (
+                paginatedVideos.map(video => (
+                  <div
+                    key={video.id}
+                    onClick={() => {
+                      setSelectedVideo(video)
+                      setActiveChunkIndex(0)
+                      setShowPickerModal(false)
+                    }}
+                    className={`bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-3 border transition-all cursor-pointer group hover:scale-[1.02] flex flex-col justify-between space-y-3 ${
+                      selectedVideo.id === video.id
+                        ? 'border-2 border-primary ring-2 ring-primary/20 bg-primary/5'
+                        : 'border-slate-200 dark:border-slate-700 hover:border-primary/60'
+                    }`}
+                  >
+                    <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-900">
+                      <img
+                        src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
+                        alt={video.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <span className="absolute top-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur-xs text-white text-[10px] font-bold rounded">
+                        {video.category || 'Sekampadi'}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1 flex-1 flex flex-col justify-between">
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                        {video.title}
+                      </h4>
+                      <div className="flex justify-between items-center text-[10px] text-slate-400 pt-2 border-t border-slate-200/40 dark:border-slate-700/40">
+                        <span>{video.date || 'BBGTK Jateng'}</span>
+                        <span className="font-bold text-primary">Pilih Video →</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Modal Pagination Footer */}
+            {totalPages > 1 && (
+              <div className="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800 text-xs">
+                <span className="text-slate-500 font-medium">Halaman {pickerPage} dari {totalPages} ({filteredVideos.length} Video)</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    disabled={pickerPage === 1}
+                    onClick={() => setPickerPage(prev => Math.max(1, prev - 1))}
+                    className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold disabled:opacity-40 cursor-pointer"
+                  >
+                    Sebelumnya
+                  </button>
+                  <button
+                    disabled={pickerPage === totalPages}
+                    onClick={() => setPickerPage(prev => Math.min(totalPages, prev + 1))}
+                    className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold disabled:opacity-40 cursor-pointer"
+                  >
+                    Selanjutnya
+                  </button>
+                </div>
+              </div>
+            )}
+
+          </div>
+        </div>
+      )}
 
     </div>
   )
