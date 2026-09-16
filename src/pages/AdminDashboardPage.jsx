@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { syncYouTubeFeed } from '../services/youtubeService';
+import { getLRSStatements, getLRSConfig, saveLRSConfig, emitXAPIStatement, XAPI_VERBS } from '../services/lrsService';
 import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell 
 } from 'recharts';
 
 const defaultLoginLogs = [
@@ -40,9 +41,23 @@ const registrationTrendData = [
 
 export default function AdminDashboardPage() {
   const { user } = useAuth();
-  const [activeLogTab, setActiveLogTab] = useState('LOGIN'); // 'LOGIN', 'POSTING', 'REGISTER'
+  const [activeLogTab, setActiveLogTab] = useState('LOGIN'); // 'LOGIN', 'POSTING', 'REGISTER', 'LRS'
   const [searchLog, setSearchLog] = useState('');
   const [isSyncing, setIsSyncing] = useState(false);
+
+  // LRS States
+  const [xAPIStatements, setXAPIStatements] = useState(() => getLRSStatements());
+  const [lrsConfig, setLRSConfig] = useState(() => getLRSConfig());
+  const [selectedStatement, setSelectedStatement] = useState(null);
+  const [showLrsModal, setShowLrsModal] = useState(false);
+
+  useEffect(() => {
+    const handleEmitted = (e) => {
+      setXAPIStatements(prev => [e.detail, ...prev]);
+    };
+    window.addEventListener('xapi_statement_emitted', handleEmitted);
+    return () => window.removeEventListener('xapi_statement_emitted', handleEmitted);
+  }, []);
 
   const [loginLogs] = useState(() => {
     const saved = localStorage.getItem('bbgtk_log_masuk');
@@ -81,128 +96,155 @@ export default function AdminDashboardPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `${filename}.csv`);
+    link.setAttribute('download', `${filename}_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  const filteredLoginLogs = loginLogs.filter(item => 
-    item.userName.toLowerCase().includes(searchLog.toLowerCase()) ||
-    item.email.toLowerCase().includes(searchLog.toLowerCase()) ||
-    item.method.toLowerCase().includes(searchLog.toLowerCase())
+  const exportJSON = (data, filename) => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `${filename}_${Date.now()}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
+  // Verb Distribution Calculation
+  const verbCounts = xAPIStatements.reduce((acc, stmt) => {
+    const verbName = stmt.verb?.display?.['id-ID'] || stmt.verb?.display?.['en-US'] || 'Aktivitas';
+    acc[verbName] = (acc[verbName] || 0) + 1;
+    return acc;
+  }, {});
+
+  const verbChartData = Object.keys(verbCounts).map(key => ({
+    name: key,
+    count: verbCounts[key]
+  }));
+
+  const COLORS = ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+
+  // Filtering
+  const filteredLoginLogs = loginLogs.filter(log =>
+    log.userName.toLowerCase().includes(searchLog.toLowerCase()) ||
+    log.email.toLowerCase().includes(searchLog.toLowerCase()) ||
+    log.method.toLowerCase().includes(searchLog.toLowerCase())
   );
 
-  const filteredPostingLogs = postingLogs.filter(item => 
-    item.userName.toLowerCase().includes(searchLog.toLowerCase()) ||
-    item.title.toLowerCase().includes(searchLog.toLowerCase()) ||
-    item.category.toLowerCase().includes(searchLog.toLowerCase())
+  const filteredPostingLogs = postingLogs.filter(log =>
+    log.userName.toLowerCase().includes(searchLog.toLowerCase()) ||
+    log.title.toLowerCase().includes(searchLog.toLowerCase()) ||
+    log.category.toLowerCase().includes(searchLog.toLowerCase())
   );
 
-  const filteredRegisterLogs = registerLogs.filter(item => 
-    item.userName.toLowerCase().includes(searchLog.toLowerCase()) ||
-    item.email.toLowerCase().includes(searchLog.toLowerCase()) ||
-    item.school.toLowerCase().includes(searchLog.toLowerCase()) ||
-    item.city.toLowerCase().includes(searchLog.toLowerCase())
+  const filteredRegisterLogs = registerLogs.filter(log =>
+    log.userName.toLowerCase().includes(searchLog.toLowerCase()) ||
+    log.school.toLowerCase().includes(searchLog.toLowerCase()) ||
+    log.city.toLowerCase().includes(searchLog.toLowerCase())
+  );
+
+  const filteredXAPI = xAPIStatements.filter(stmt =>
+    stmt.actor?.name?.toLowerCase().includes(searchLog.toLowerCase()) ||
+    stmt.actor?.mbox?.toLowerCase().includes(searchLog.toLowerCase()) ||
+    stmt.verb?.display?.['id-ID']?.toLowerCase().includes(searchLog.toLowerCase()) ||
+    stmt.object?.definition?.name?.['id-ID']?.toLowerCase().includes(searchLog.toLowerCase())
   );
 
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto">
-      {/* Top Header Banner */}
-      <div className="bg-gradient-to-r from-primary via-blue-700 to-indigo-800 text-white rounded-3xl p-8 shadow-xl relative overflow-hidden">
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-6">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white text-xs font-bold uppercase tracking-wider mb-3 backdrop-blur-md">
-              <span className="material-symbols-outlined text-sm">shield</span>
-              <span>Hak Akses Terproteksi ({user?.role?.toUpperCase() || 'ADMIN'})</span>
-            </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Dashboard Pengguna & Log Aktivitas</h1>
-            <p className="text-white/80 text-base mt-2 max-w-2xl">
-              Pusat pemantauan aktivitas pengguna, log masuk, log pendaftaran, dan audit postingan praktik baik di ekosistem Educorner.
-            </p>
-          </div>
+    <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen p-6 lg:p-10 space-y-8">
+      
+      {/* Header Banner */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div>
           <div className="flex items-center gap-3">
-            <button
-              onClick={handleAdminSync}
-              disabled={isSyncing}
-              className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm shadow-lg shadow-red-600/30 transition-all cursor-pointer disabled:opacity-50"
-            >
-              <span className={`material-symbols-outlined text-lg ${isSyncing ? 'animate-spin' : ''}`}>sync</span>
-              <span>{isSyncing ? 'Syncing RSS...' : 'Sync YouTube'}</span>
-            </button>
-            {user?.role === 'superadmin' && (
-              <Link
-                to="/settings"
-                className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-white/20 hover:bg-white/30 text-white font-bold text-sm backdrop-blur-md transition-all cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-lg">manage_accounts</span>
-                <span>Kelola Role</span>
-              </Link>
-            )}
+            <div className="p-2.5 bg-primary/10 text-primary rounded-xl">
+              <span className="material-symbols-outlined text-2xl">admin_panel_settings</span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                Dashboard Pengguna & Analitik LRS (xAPI)
+              </h1>
+              <p className="text-xs text-slate-500">
+                Pusat kontrol terpadu untuk audit log pengguna, postingan, pendaftaran, dan data analitik e-learning terstandar xAPI.
+              </p>
+            </div>
           </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleAdminSync}
+            disabled={isSyncing}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400 font-bold text-xs hover:bg-red-500 hover:text-white transition-all cursor-pointer disabled:opacity-50"
+          >
+            <span className={`material-symbols-outlined text-base ${isSyncing ? 'animate-spin' : ''}`}>sync</span>
+            <span>{isSyncing ? 'Syncing...' : 'Sync YouTube'}</span>
+          </button>
+
+          <button
+            onClick={() => setShowLrsModal(true)}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400 font-bold text-xs hover:bg-purple-600 hover:text-white transition-all cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-base">settings_remote</span>
+            <span>Server LRS</span>
+          </button>
         </div>
       </div>
 
-      {/* Summary Analytics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
-            <span className="material-symbols-outlined text-3xl">login</span>
+      {/* KPI Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+          <div className="flex justify-between items-center text-slate-500 text-xs font-semibold">
+            <span>Total Log Masuk (Login)</span>
+            <span className="material-symbols-outlined text-primary">login</span>
           </div>
-          <div>
-            <div className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Log Masuk Hari Ini</div>
-            <div className="text-3xl font-black text-slate-900 dark:text-white mt-1">{loginLogs.length}</div>
-            <div className="text-xs text-emerald-600 font-semibold mt-0.5">↑ 100% Berhasil</div>
-          </div>
+          <p className="text-3xl font-black text-slate-900 dark:text-white">{loginLogs.length}</p>
+          <p className="text-[11px] text-emerald-600 font-bold">100% Autentikasi Terverifikasi</p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
-            <span className="material-symbols-outlined text-3xl">person_add</span>
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+          <div className="flex justify-between items-center text-slate-500 text-xs font-semibold">
+            <span>Log Posting Praktik Baik</span>
+            <span className="material-symbols-outlined text-amber-500">post_add</span>
           </div>
-          <div>
-            <div className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Log Pendaftaran</div>
-            <div className="text-3xl font-black text-slate-900 dark:text-white mt-1">{registerLogs.length}</div>
-            <div className="text-xs text-emerald-600 font-semibold mt-0.5">Otomatis Terverifikasi</div>
-          </div>
+          <p className="text-3xl font-black text-slate-900 dark:text-white">{postingLogs.length}</p>
+          <p className="text-[11px] text-slate-400">Konten Pembelajaran Baru</p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
-            <span className="material-symbols-outlined text-3xl">post_add</span>
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+          <div className="flex justify-between items-center text-slate-500 text-xs font-semibold">
+            <span>Pendaftaran Baru</span>
+            <span className="material-symbols-outlined text-emerald-500">person_add</span>
           </div>
-          <div>
-            <div className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Log Posting Praktik Baik</div>
-            <div className="text-3xl font-black text-slate-900 dark:text-white mt-1">{postingLogs.length}</div>
-            <div className="text-xs text-amber-600 font-semibold mt-0.5">1 Pending Moderasi</div>
-          </div>
+          <p className="text-3xl font-black text-slate-900 dark:text-white">{registerLogs.length}</p>
+          <p className="text-[11px] text-emerald-600 font-bold">+12% Minggu Ini</p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-violet-500/10 text-violet-600 flex items-center justify-center">
-            <span className="material-symbols-outlined text-3xl">groups</span>
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+          <div className="flex justify-between items-center text-slate-500 text-xs font-semibold">
+            <span>xAPI LRS Statements</span>
+            <span className="material-symbols-outlined text-purple-500">database</span>
           </div>
-          <div>
-            <div className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Total Komunitas Guru</div>
-            <div className="text-3xl font-black text-slate-900 dark:text-white mt-1">5,420</div>
-            <div className="text-xs text-slate-400 font-semibold mt-0.5">Jawa Tengah</div>
-          </div>
+          <p className="text-3xl font-black text-slate-900 dark:text-white">{xAPIStatements.length}</p>
+          <p className="text-[11px] text-purple-600 dark:text-purple-400 font-bold">Standard ADL xAPI v1.0.3</p>
         </div>
       </div>
 
-      {/* Analytics Chart Section */}
-      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-2">
+      {/* Visual Analytics Chart */}
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Tren Aktivitas Pengguna (Mingguan)</h3>
-            <p className="text-xs text-slate-500">Statistik jumlah pendaftaran dan log masuk pengguna Educorner</p>
+            <h3 className="font-bold text-slate-900 dark:text-white text-base">📈 Tren Aktivitas Pengguna & Pendaftaran</h3>
+            <p className="text-xs text-slate-500">Grafik perbandingan riwayat masuk harian dan akun terdaftar</p>
           </div>
           <div className="flex items-center gap-4 text-xs font-semibold">
             <span className="flex items-center gap-1.5 text-primary"><span className="w-3 h-3 rounded-full bg-primary inline-block"></span> Log Masuk</span>
             <span className="flex items-center gap-1.5 text-emerald-500"><span className="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Pendaftaran Baru</span>
           </div>
         </div>
-        <div className="h-[280px]">
+        <div className="h-[240px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={registrationTrendData}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
@@ -216,14 +258,15 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Log Section Tabs & Actions */}
+      {/* Unified Log Section Tabs & Actions */}
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          
           {/* Tab Selection Buttons */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
             <button
               onClick={() => setActiveLogTab('LOGIN')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                 activeLogTab === 'LOGIN'
                   ? 'bg-primary text-white shadow-md shadow-primary/20'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
@@ -235,7 +278,7 @@ export default function AdminDashboardPage() {
 
             <button
               onClick={() => setActiveLogTab('POSTING')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                 activeLogTab === 'POSTING'
                   ? 'bg-amber-600 text-white shadow-md shadow-amber-600/20'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
@@ -247,7 +290,7 @@ export default function AdminDashboardPage() {
 
             <button
               onClick={() => setActiveLogTab('REGISTER')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                 activeLogTab === 'REGISTER'
                   ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
@@ -255,6 +298,18 @@ export default function AdminDashboardPage() {
             >
               <span className="material-symbols-outlined text-base">person_add</span>
               <span>3. Log Register</span>
+            </button>
+
+            <button
+              onClick={() => setActiveLogTab('LRS')}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+                activeLogTab === 'LRS'
+                  ? 'bg-purple-600 text-white shadow-md shadow-purple-600/20'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+              }`}
+            >
+              <span className="material-symbols-outlined text-base">database</span>
+              <span>4. Log xAPI & LRS Analytics</span>
             </button>
           </div>
 
@@ -266,20 +321,21 @@ export default function AdminDashboardPage() {
                 type="text"
                 value={searchLog}
                 onChange={(e) => setSearchLog(e.target.value)}
-                placeholder="Cari log pengguna..."
-                className="pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-primary/20 w-48 md:w-64"
+                placeholder="Cari kata kunci..."
+                className="pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-primary/20 w-44 md:w-60"
               />
             </div>
             <button
               onClick={() => {
                 if (activeLogTab === 'LOGIN') exportCSV(loginLogs, 'Log_Masuk_Educorner');
                 else if (activeLogTab === 'POSTING') exportCSV(postingLogs, 'Log_Posting_Educorner');
-                else exportCSV(registerLogs, 'Log_Register_Educorner');
+                else if (activeLogTab === 'REGISTER') exportCSV(registerLogs, 'Log_Register_Educorner');
+                else exportJSON(xAPIStatements, 'xAPI_LRS_Statements');
               }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-200 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-200 transition-all cursor-pointer shrink-0"
             >
               <span className="material-symbols-outlined text-sm">download</span>
-              <span>Export CSV</span>
+              <span>Export {activeLogTab === 'LRS' ? 'JSON' : 'CSV'}</span>
             </button>
           </div>
         </div>
@@ -297,7 +353,7 @@ export default function AdminDashboardPage() {
               </span>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[800px]">
+              <table className="w-full text-left border-collapse min-w-[750px]">
                 <thead>
                   <tr className="bg-slate-50 dark:bg-slate-800/50 text-xs font-bold uppercase tracking-wider text-slate-500">
                     <th className="px-6 py-4">Waktu Login</th>
@@ -351,7 +407,7 @@ export default function AdminDashboardPage() {
               </span>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[800px]">
+              <table className="w-full text-left border-collapse min-w-[750px]">
                 <thead>
                   <tr className="bg-slate-50 dark:bg-slate-800/50 text-xs font-bold uppercase tracking-wider text-slate-500">
                     <th className="px-6 py-4">Waktu Aktivitas</th>
@@ -367,16 +423,16 @@ export default function AdminDashboardPage() {
                     <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
                       <td className="px-6 py-4 font-mono text-xs text-slate-500">{log.timestamp}</td>
                       <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">{log.userName}</td>
-                      <td className="px-6 py-4 font-semibold text-xs text-slate-700 dark:text-slate-300">{log.action}</td>
-                      <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-100 max-w-xs truncate">{log.title}</td>
+                      <td className="px-6 py-4 text-xs font-semibold">{log.action}</td>
+                      <td className="px-6 py-4 max-w-xs truncate text-slate-800 dark:text-slate-200 font-medium">{log.title}</td>
                       <td className="px-6 py-4">
-                        <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary">
+                        <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                           {log.category}
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full ${
-                          log.status === 'Disetujui' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400' : 'bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400'
+                          log.status.includes('Disetujui') ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400' : 'bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400'
                         }`}>
                           {log.status}
                         </span>
@@ -389,29 +445,28 @@ export default function AdminDashboardPage() {
           </div>
         )}
 
-        {/* Tab 3: Log Register (Registration Logs) */}
+        {/* Tab 3: Log Register (Register Logs) */}
         {activeLogTab === 'REGISTER' && (
           <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm">
             <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-slate-900 dark:text-white text-base">👤 Log Riwayat Pendaftaran Pengguna</h3>
-                <p className="text-xs text-slate-500">Mencatat riwayat registrasi akun baru pendidik & asal instansi</p>
+                <h3 className="font-bold text-slate-900 dark:text-white text-base">👤 Log Pendaftaran Pengguna Baru</h3>
+                <p className="text-xs text-slate-500">Mencatat data akun guru & tenaga kependidikan yang baru terdaftar</p>
               </div>
               <span className="text-xs font-bold text-emerald-600 bg-emerald-500/10 px-3 py-1 rounded-full">
                 {filteredRegisterLogs.length} Entri Log
               </span>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[800px]">
+              <table className="w-full text-left border-collapse min-w-[750px]">
                 <thead>
                   <tr className="bg-slate-50 dark:bg-slate-800/50 text-xs font-bold uppercase tracking-wider text-slate-500">
                     <th className="px-6 py-4">Waktu Daftar</th>
                     <th className="px-6 py-4">Nama Lengkap</th>
                     <th className="px-6 py-4">Email</th>
-                    <th className="px-6 py-4">Asal Sekolah</th>
+                    <th className="px-6 py-4">Instansi Sekolah</th>
                     <th className="px-6 py-4">Kab/Kota</th>
-                    <th className="px-6 py-4">Metode Daftar</th>
-                    <th className="px-6 py-4">Status Akun</th>
+                    <th className="px-6 py-4">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
@@ -420,15 +475,8 @@ export default function AdminDashboardPage() {
                       <td className="px-6 py-4 font-mono text-xs text-slate-500">{log.timestamp}</td>
                       <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">{log.userName}</td>
                       <td className="px-6 py-4 text-slate-600 dark:text-slate-400">{log.email}</td>
-                      <td className="px-6 py-4 text-slate-900 dark:text-slate-100 font-medium">{log.school}</td>
-                      <td className="px-6 py-4 text-slate-500 text-xs">{log.city}</td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full ${
-                          log.method.includes('Google') ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
-                        }`}>
-                          {log.method}
-                        </span>
-                      </td>
+                      <td className="px-6 py-4 font-medium text-slate-800 dark:text-slate-200">{log.school}</td>
+                      <td className="px-6 py-4 text-xs text-slate-500">{log.city}</td>
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
                           {log.status}
@@ -441,7 +489,201 @@ export default function AdminDashboardPage() {
             </div>
           </div>
         )}
+
+        {/* Tab 4: Unified Log xAPI & LRS Analytics */}
+        {activeLogTab === 'LRS' && (
+          <div className="space-y-6">
+            {/* Verb Chart Sub-section */}
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+              <h3 className="font-bold text-slate-900 dark:text-white text-base">📊 Distribusi Aksi Belajar (xAPI Verbs)</h3>
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={verbChartData} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+                    <XAxis type="number" axisLine={false} tickLine={false} />
+                    <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} width={130} />
+                    <Tooltip contentStyle={{ borderRadius: '12px', border: 'none' }} />
+                    <Bar dataKey="count" radius={[0, 8, 8, 0]}>
+                      {verbChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* xAPI Stream Table */}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-slate-900 dark:text-white text-base">📡 Aliran Rekaman Data xAPI (LRS Stream)</h3>
+                  <p className="text-xs text-slate-500">Struktur data standar xAPI (Actor - Verb - Object - Result)</p>
+                </div>
+                <button
+                  onClick={() => {
+                    emitXAPIStatement({
+                      user: user || { fullName: 'Budi Hartono', email: 'budi@guru.sd.belajar.id' },
+                      verb: XAPI_VERBS.WATCHED,
+                      objectName: 'Webinar Sekampadi: Pembelajaran Berbasis AI',
+                      objectId: 'https://sole.id/webinar/sim-1',
+                      result: { completion: true, duration: 'PT30M' }
+                    });
+                    setXAPIStatements(getLRSStatements());
+                  }}
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs shadow-md transition-all flex items-center gap-1 cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-xs">send</span>
+                  <span>Uji Statement</span>
+                </button>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[750px]">
+                  <thead>
+                    <tr className="bg-slate-50 dark:bg-slate-800/50 text-xs font-bold uppercase tracking-wider text-slate-500">
+                      <th className="px-5 py-3">Timestamp</th>
+                      <th className="px-5 py-3">Actor (Pendidik)</th>
+                      <th className="px-5 py-3">Verb (Aksi)</th>
+                      <th className="px-5 py-3">Object (Materi)</th>
+                      <th className="px-5 py-3">Result / Progress</th>
+                      <th className="px-5 py-3">Inspector</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                    {filteredXAPI.map((stmt) => (
+                      <tr key={stmt.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                        <td className="px-5 py-3 font-mono text-slate-400">
+                          {new Date(stmt.timestamp).toLocaleTimeString('id-ID')}
+                        </td>
+                        <td className="px-5 py-3">
+                          <div className="font-bold text-slate-900 dark:text-white">{stmt.actor?.name}</div>
+                          <div className="text-[10px] text-slate-400 font-mono">{stmt.actor?.mbox}</div>
+                        </td>
+                        <td className="px-5 py-3">
+                          <span className="px-2.5 py-1 rounded-full font-bold bg-purple-50 text-purple-600 dark:bg-purple-950/50 dark:text-purple-300 uppercase text-[10px]">
+                            {stmt.verb?.display?.['id-ID'] || stmt.verb?.display?.['en-US']}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3 max-w-xs truncate">
+                          <div className="font-semibold text-slate-800 dark:text-slate-200">
+                            {stmt.object?.definition?.name?.['id-ID'] || 'Aktivitas'}
+                          </div>
+                          <div className="text-[10px] text-slate-400 font-mono truncate">{stmt.object?.id}</div>
+                        </td>
+                        <td className="px-5 py-3">
+                          {stmt.result?.score ? (
+                            <span className="font-mono font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded">
+                              Skor: {stmt.result.score.raw}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400">Terselesaikan</span>
+                          )}
+                        </td>
+                        <td className="px-5 py-3">
+                          <button
+                            onClick={() => setSelectedStatement(stmt)}
+                            className="px-3 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold rounded-lg text-[11px] flex items-center gap-1 cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-xs">code</span>
+                            <span>Raw JSON</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
+
+      {/* Raw JSON Inspector Modal */}
+      {selectedStatement && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setSelectedStatement(null)}>
+          <div className="bg-slate-900 text-white rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl border border-slate-800" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-emerald-400">data_object</span>
+                <h3 className="font-mono text-sm font-bold">xAPI Statement Payload Inspector</h3>
+              </div>
+              <button onClick={() => setSelectedStatement(null)} className="text-slate-400 hover:text-white cursor-pointer">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <pre className="bg-slate-950 p-4 rounded-xl text-xs font-mono text-emerald-400 overflow-x-auto max-h-96 leading-relaxed">
+              {JSON.stringify(selectedStatement, null, 2)}
+            </pre>
+
+            <div className="flex justify-end">
+              <button
+                onClick={() => setSelectedStatement(null)}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg text-xs cursor-pointer"
+              >
+                Tutup Inspector
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal LRS Configuration */}
+      {showLrsModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowLrsModal(false)}>
+          <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-200 dark:border-slate-800" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="font-bold text-base">Konfigurasi Remote LRS Endpoint</h3>
+              <button onClick={() => setShowLrsModal(false)} className="text-slate-400 hover:text-slate-600 cursor-pointer">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={(e) => { e.preventDefault(); saveLRSConfig(lrsConfig); setShowLrsModal(false); alert('✅ Konfigurasi LRS Server Berhasil Disimpan!'); }} className="space-y-4 text-xs">
+              <div>
+                <label className="font-bold block mb-1">LRS Endpoint URL</label>
+                <input
+                  type="url"
+                  required
+                  value={lrsConfig.endpoint}
+                  onChange={(e) => setLRSConfig({ ...lrsConfig, endpoint: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold block mb-1">xAPI Auth Key</label>
+                <input
+                  type="text"
+                  required
+                  value={lrsConfig.key}
+                  onChange={(e) => setLRSConfig({ ...lrsConfig, key: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold block mb-1">xAPI Auth Secret</label>
+                <input
+                  type="password"
+                  required
+                  value={lrsConfig.secret}
+                  onChange={(e) => setLRSConfig({ ...lrsConfig, secret: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none font-mono"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3">
+                <button type="button" onClick={() => setShowLrsModal(false)} className="px-4 py-2 border rounded-lg font-bold">Batal</button>
+                <button type="submit" className="px-4 py-2 bg-primary text-white font-bold rounded-lg shadow-md">Simpan Konfigurasi</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
