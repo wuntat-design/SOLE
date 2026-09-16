@@ -31,8 +31,16 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+      {/* Mobile Sidebar Backdrop Overlay */}
+      {isSidebarOpen && (
+        <div 
+          onClick={() => setIsSidebarOpen(false)}
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-30 md:hidden animate-fade-in"
+        ></div>
+      )}
+
       {/* Side Navigation */}
-      <aside className={`border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col flex-shrink-0 transition-all duration-300 ${isSidebarOpen ? 'w-64 opacity-100' : 'w-0 opacity-0 overflow-hidden border-r-0'}`}>
+      <aside className={`fixed md:relative z-40 h-full border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col flex-shrink-0 transition-all duration-300 ${isSidebarOpen ? 'w-64 opacity-100 translate-x-0 shadow-2xl md:shadow-none' : 'w-0 opacity-0 -translate-x-full overflow-hidden border-r-0'}`}>
         <div className="p-6 flex flex-col gap-8 h-full min-w-[256px]">
           {/* Brand Profile */}
           <Link to="/" className="flex items-center gap-3">
@@ -143,8 +151,8 @@ export default function DashboardLayout({ children }) {
             >
               <span className="material-symbols-outlined">{isSidebarOpen ? 'menu_open' : 'menu'}</span>
             </button>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-              {path === '/admin/dashboard' ? 'Dashboard Pengguna & Log Aktivitas' : path === '/moderation' ? 'Moderasi Konten' : path.startsWith('/settings') ? 'Kelola Role & Moderator' : path.startsWith('/best-practice') ? 'Best Practice Gallery' : path === '/webinar' ? 'Perpustakaan Webinar' : 'Dashboard Utama'}
+            <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-slate-100 truncate max-w-[180px] sm:max-w-none">
+              {path === '/admin/dashboard' ? 'Dashboard Pengguna & Log' : path === '/moderation' ? 'Moderasi Konten' : path.startsWith('/settings') ? 'Kelola Role' : path.startsWith('/best-practice') ? 'Best Practice Gallery' : path === '/webinar' ? 'Perpustakaan Webinar' : 'Dashboard Utama'}
             </h2>
           </div>
           <div className="flex items-center gap-4">
