@@ -158,24 +158,22 @@ export default function WebinarPage() {
                       </span>
                     </div>
                     <div className="flex flex-col gap-2">
+                      <Link 
+                        to={`/course/${video.id}`}
+                        className="bg-primary text-white hover:bg-primary/90 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-sm">school</span>
+                        <span>Mulai Course 32 JP</span>
+                      </Link>
                       <a 
                         href={`https://www.youtube.com/watch?v=${video.youtubeId}`} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="bg-primary/10 hover:bg-primary text-primary hover:text-white px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 cursor-pointer"
+                        className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1 cursor-pointer"
                       >
-                        Buka di YouTube
-                        <span className="material-symbols-outlined text-sm">open_in_new</span>
+                        <span>YouTube</span>
+                        <span className="material-symbols-outlined text-xs">open_in_new</span>
                       </a>
-                      {isLoggedIn && (
-                        <Link
-                          to={`/best-practice/create?webinarId=${video.id}`}
-                          className="bg-emerald-500/10 hover:bg-emerald-500 text-emerald-600 hover:text-white px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 cursor-pointer"
-                        >
-                          <span className="material-symbols-outlined text-sm">edit_note</span>
-                          Tulis Praktik Baik
-                        </Link>
-                      )}
                     </div>
                   </div>
                 </div>
