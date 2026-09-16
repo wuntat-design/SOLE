@@ -169,7 +169,7 @@ export default function VideoChunkingPage() {
       ...userNotes,
       [`${selectedVideo.id}_${activeChunkIndex}`]: notes
     })
-    alert('✅ Catatan ringkasan segmen berhasil disimpan!')
+    alert('Catatan ringkasan segmen berhasil disimpan!')
   }
 
   const activeChunk = chunkSegments[activeChunkIndex] || chunkSegments[0]
@@ -233,7 +233,7 @@ export default function VideoChunkingPage() {
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
               }`}
             >
-              ⏱️ Otomatis ({customChunkDuration} Menit)
+              Otomatis ({customChunkDuration} Menit)
             </button>
 
             <button
@@ -244,7 +244,7 @@ export default function VideoChunkingPage() {
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
               }`}
             >
-              🎨 Kustom Pilihan Pengguna
+              Kustom Pilihan Pengguna
             </button>
           </div>
         </div>
