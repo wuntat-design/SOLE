@@ -261,7 +261,96 @@ export default function LoginPage() {
               </button>
             </div>
 
-            <div className="mt-12 text-center">
+            {/* Quick Demo Account Selector */}
+            <div className="mt-8 p-4 bg-slate-100 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700/60 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-sm text-primary">touch_app</span>
+                  <span>Uji Coba Cepat (Akun Demo)</span>
+                </span>
+                <span className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded">Klik 1-Kali</span>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    login({
+                      firstName: 'Budi',
+                      fullName: 'Budi Hartono, S.Pd.',
+                      email: 'budi.hartono@guru.sd.belajar.id',
+                      school: 'SDN 01 Semarang',
+                      role: 'user',
+                      method: 'Google (belajar.id)'
+                    });
+                    navigate('/');
+                  }}
+                  className="p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-slate-200 hover:border-primary hover:text-primary transition-all text-left cursor-pointer"
+                >
+                  <div className="font-bold">1. User Guru</div>
+                  <div className="text-[10px] text-slate-400 font-normal truncate">budi@guru.sd.belajar.id</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    login({
+                      firstName: 'Siti',
+                      fullName: 'Siti Aminah, M.Pd.',
+                      email: 'siti.aminah@guru.smp.belajar.id',
+                      school: 'SMPN 3 Surakarta',
+                      role: 'moderator',
+                      method: 'Google (belajar.id)'
+                    });
+                    navigate('/');
+                  }}
+                  className="p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-amber-600 dark:text-amber-400 hover:border-amber-500 transition-all text-left cursor-pointer"
+                >
+                  <div className="font-bold">2. Moderator</div>
+                  <div className="text-[10px] text-slate-400 font-normal truncate">siti.moderator@smp.belajar.id</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    login({
+                      firstName: 'Admin',
+                      fullName: 'Admin BBGTK Jateng',
+                      email: 'admin.bbgtk@dikbud.belajar.id',
+                      school: 'BBGTK Jawa Tengah',
+                      role: 'admin',
+                      method: 'Google (belajar.id)'
+                    });
+                    navigate('/');
+                  }}
+                  className="p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-primary hover:border-primary transition-all text-left cursor-pointer"
+                >
+                  <div className="font-bold">3. Admin BBGTK</div>
+                  <div className="text-[10px] text-slate-400 font-normal truncate">admin@dikbud.belajar.id</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    login({
+                      firstName: 'SuperAdmin',
+                      fullName: 'Super Admin System',
+                      email: 'superadmin@sole.id',
+                      school: 'BBGTK Jawa Tengah',
+                      role: 'superadmin',
+                      method: 'Sistem Pengelola'
+                    });
+                    navigate('/');
+                  }}
+                  className="p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-purple-600 dark:text-purple-400 hover:border-purple-500 transition-all text-left cursor-pointer"
+                >
+                  <div className="font-bold">4. Super Admin</div>
+                  <div className="text-[10px] text-slate-400 font-normal truncate">superadmin@sole.id</div>
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-8 text-center">
               <p className="text-on-surface-variant font-medium">
                 Belum punya akun?
                 <Link className="text-primary font-bold hover:underline ml-1 cursor-pointer" to="/register">Daftar Sekarang</Link>
