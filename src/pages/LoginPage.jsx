@@ -1,3 +1,4 @@
+import { useGoogleLogin } from '@react-oauth/google'; // <-- Tambahkan baris ini
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -147,16 +148,17 @@ export default function LoginPage() {
               Selamat datang di Educorner
             </h1>
             <p className="text-on-primary-container text-lg max-w-sm font-medium opacity-90 leading-relaxed">
-              SOLE: Wadah Kolaborasi Guru untuk Pembelajaran Bermakna.
+              Wadah Kolaborasi Guru untuk Pembelajaran Bermakna.
             </p>
           </div>
 
           <div className="relative z-10">
             <div className="flex -space-x-4 mb-4">
-              <img className="w-10 h-10 rounded-full border-2 border-white object-cover" alt="professional portrait of a female educator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkiwSuAnzkgj3TmfSptaVKSifJYhNI-E9XkQZGk8Y__QJIhAeN86kjgWk_zrYA4K6n35EatxMSHI6FFfsDcMXIMl4IwZy8PiCjkEO2dPH3jhnw2BV2d6eemK_4TlDIBeXznrpfcvMciy5wn2osKZ8qJnUa9GJ00lKV-QoY1Exsvuhqr9yrKO3NrfL6uRM8eZnFGwhhVQixrrY_asLm98YLBw-M6aYosJeYh4mPfP1SE6kG5FMfUUDrIXeW3A83xmUYDtffh_um2CkK" />
-              <img className="w-10 h-10 rounded-full border-2 border-white object-cover" alt="smiling male teacher in a modern library" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBg0hh-VdWk3aHjFbTtvKy6lwNfVrhsoc53m0d0WqX_8vohahWrKUVeBJgxNngV_MAhnhAEvtkWxSnkzo3isW4r_alm6kw5aPX-JYQywE4TSQybNOykIeKplkidxv7Mh1itdeWyG7bya77mR_Wiz0DLk4k5IgcRW3ToNtxWWnYZnkTPmEcUhfqElHAWS-F3keJ0UL761WzQGH9jVQ65db8WjAM921N2KCNQbsJGFFXc0Y8HAIag3vyqcwAOg5swyQ_AwJdC5Tx6fPHr" />
-              <img className="w-10 h-10 rounded-full border-2 border-white object-cover" alt="thoughtful young woman educator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4LD_G7GlQZW6OK1M5O3KxhxKWdtozpoiUnav8gYbzLGVgOhX8p-CZtF0ighQuz02FKqOsIEJNoJEwFb1hZNK8Mes9OcmTLhCrNJnvLRvKtU6hG3tGHVnI8GejLf0MWBs3X7fHMqgucsoNC9rryI4Lpq_SfnujAE-4Nyz4Q1QSAmme_wv0z7ArSDJOTeJsJj6-qNhI9idMbwhDsFg05IaKSNaamr66H6UFYcgCFCRGtIzQ500s6Eb-L4IUt_b7gy53oSguELA9V906" />
-              <div className="w-10 h-10 rounded-full border-2 border-white bg-secondary-container flex items-center justify-center text-on-secondary-container text-xs font-bold">+5k</div>
+              <img className="w-12 h-12 rounded-full border-2 border-white object-cover shadow-md" alt="Pendidik BBGTK 1" src="/avatars/face1.jpg" />
+              <img className="w-12 h-12 rounded-full border-2 border-white object-cover shadow-md" alt="Pendidik BBGTK 2" src="/avatars/face2.jpg" />
+              <img className="w-12 h-12 rounded-full border-2 border-white object-cover shadow-md" alt="Pendidik BBGTK 3" src="/avatars/face3.jpg" />
+              <img className="w-12 h-12 rounded-full border-2 border-white object-cover shadow-md" alt="Pendidik BBGTK 4" src="/avatars/face4.jpg" />
+              <div className="w-12 h-12 rounded-full border-2 border-white bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-xs font-bold shadow-md">+5k</div>
             </div>
             <p className="text-white/80 text-sm font-medium tracking-wide uppercase">Bergabung dengan Ribuan Guru dan Tenaga Kependidikan</p>
           </div>
@@ -329,7 +331,7 @@ export default function LoginPage() {
         </div>
       )}
 
-      {/* Simple Footer */}
+      {/* Simple Footer - Created & Designed by Wuntat Widiyono */}
       <footer className="w-full max-w-[1200px] flex flex-col md:flex-row justify-between items-center py-8 px-6 text-outline font-medium text-sm mt-auto">
         <div className="mb-4 md:mb-0">© 2026 BBGTK Provinsi Jawa Tengah. All Rights Reserved.</div>
         <div className="flex gap-8">

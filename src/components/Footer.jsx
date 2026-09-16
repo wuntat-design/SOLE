@@ -97,6 +97,7 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+        {/* Created & Designed by Wuntat Widiyono */}
         <p className="text-slate-400 text-xs">© 2026 BBGTK Provinsi Jawa Tengah. Hak Cipta Dilindungi Undang-Undang.</p>
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-500"></span>

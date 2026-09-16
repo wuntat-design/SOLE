@@ -272,7 +272,7 @@ export default function RegisterPage() {
         </div>
       </main>
 
-      {/* Footer Component */}
+      {/* Footer Component - Created & Designed by Wuntat Widiyono */}
       <footer className="w-full py-8 px-8 flex flex-col md:flex-row justify-between items-center mt-auto bg-surface-container-low border-t border-outline-variant/15">
         <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-4 md:mb-0">
           © 2026 BBGTK Provinsi Jawa Tengah. All Rights Reserved.
