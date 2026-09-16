@@ -54,14 +54,14 @@ function WebinarCard({ webinar }) {
 export default function WebinarSection() {
   const { user } = useAuth()
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin'
-  const [webinars, setWebinars] = useState(() => getStoredVideos().slice(0, 5))
+  const [webinars, setWebinars] = useState(() => getStoredVideos().slice(0, 10))
   const [isSyncing, setIsSyncing] = useState(false)
   const [lastSynced, setLastSynced] = useState(getStoredLastSynced)
 
   useEffect(() => {
     const handleSyncedEvent = (e) => {
       if (e.detail?.videos) {
-        setWebinars(e.detail.videos.slice(0, 5))
+        setWebinars(e.detail.videos.slice(0, 10))
         setLastSynced(e.detail.time)
       }
     }
@@ -73,7 +73,7 @@ export default function WebinarSection() {
     setIsSyncing(true)
     const result = await syncYouTubeFeed()
     if (result.success) {
-      setWebinars(result.videos.slice(0, 5))
+      setWebinars(result.videos.slice(0, 10))
       setLastSynced(result.time)
     }
     setIsSyncing(false)
