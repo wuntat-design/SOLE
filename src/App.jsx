@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage.jsx'
 import WebinarPage from './pages/WebinarPage.jsx'
 import CourseDetailPage from './pages/CourseDetailPage.jsx'
+import VideoChunkingPage from './pages/VideoChunkingPage.jsx'
 import BestPracticePage from './pages/BestPracticePage.jsx'
 import BestPracticeDetailPage from './pages/BestPracticeDetailPage.jsx'
 import CreateBestPracticePage from './pages/CreateBestPracticePage.jsx'
@@ -49,6 +50,7 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/webinar" element={<WebinarPage />} />
+              <Route path="/video-chunking" element={<VideoChunkingPage />} />
               <Route path="/course/:id" element={<CourseDetailPage />} />
               <Route path="/best-practice" element={<BestPracticePage />} />
               <Route path="/best-practice/create" element={<CreateBestPracticePage />} />
