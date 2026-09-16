@@ -6,11 +6,28 @@ import youtubeData from '../data/youtubeVideos.json'
 export default function VideoChunkingPage() {
   const { user } = useAuth()
   
-  // Selected Video & Modal States
+  // Selected Video & Segment Mode States
   const [selectedVideo, setSelectedVideo] = useState(youtubeData[0])
   const [activeChunkIndex, setActiveChunkIndex] = useState(0)
   const [notes, setNotes] = useState('')
   const [userNotes, setUserNotes] = useState({})
+
+  // Segmentation Mode: 'PRESET' (10-Min Standard) or 'CUSTOM' (Pilihan Pengguna)
+  const [segmentMode, setSegmentMode] = useState('PRESET') // 'PRESET', 'CUSTOM'
+  const [customChunkDuration, setCustomChunkDuration] = useState(10) // 5, 10, 15, 20
+
+  // Custom User Segments Storage State
+  const [customSegmentsList, setCustomSegmentsList] = useState(() => {
+    const saved = localStorage.getItem('bbgtk_user_custom_segments')
+    return saved ? JSON.parse(saved) : {}
+  })
+
+  // Custom Segment Creator Modal Form States
+  const [showCustomModal, setShowCustomModal] = useState(false)
+  const [customTitle, setCustomTitle] = useState('')
+  const [customStartMin, setCustomStartMin] = useState(0)
+  const [customEndMin, setCustomEndMin] = useState(10)
+  const [customSummary, setCustomSummary] = useState('')
 
   // Video Picker Modal States
   const [showPickerModal, setShowPickerModal] = useState(false)
@@ -19,8 +36,6 @@ export default function VideoChunkingPage() {
   const [pickerPage, setPickerPage] = useState(1)
 
   const itemsPerPage = 6
-
-  // Categories list
   const categories = ['Semua', 'Sekampadi', 'Sosialisasi', 'Teknologi', 'Pedagogi', 'Inspirasi']
 
   // Filter videos for picker modal
@@ -35,37 +50,97 @@ export default function VideoChunkingPage() {
   const totalPages = Math.ceil(filteredVideos.length / itemsPerPage)
   const paginatedVideos = filteredVideos.slice((pickerPage - 1) * itemsPerPage, pickerPage * itemsPerPage)
 
-  // Generate 10-Minute Chunk Segments for the selected video
-  const chunkDurationMinutes = 10
-  const totalChunks = 6 // Standard 60-minute webinar divided into 6 x 10-min chunks
+  // Format Helper Minutes to HH:MM:SS
+  const formatTime = (min) => {
+    const h = Math.floor(min / 60)
+    const m = Math.floor(min % 60)
+    return h > 0 ? `${h}:${m < 10 ? '0' : ''}${m}:00` : `${m < 10 ? '0' : ''}${m}:00`
+  }
 
-  const chunkSegments = Array.from({ length: totalChunks }, (_, idx) => {
-    const startMin = idx * chunkDurationMinutes
-    const endMin = (idx + 1) * chunkDurationMinutes
-    const formatTime = (min) => {
-      const h = Math.floor(min / 60)
-      const m = min % 60
-      return h > 0 ? `${h}:${m < 10 ? '0' : ''}${m}:00` : `${m < 10 ? '0' : ''}${m}:00`
-    }
+  // Generate Segments based on Mode
+  let chunkSegments = []
 
-    const titles = [
-      'Orientasi & Konsep Dasar Pembelajaran',
-      'Strategi Asesmen Formatif & Prompt AI',
-      'Studi Kasus & Pembelajaran Terdiferensiasi',
-      'Diskusi Interaktif & Tanya Jawab Pendidik',
-      'Tantangan Lapangan & Penyusunan Rubrik',
-      'Refleksi & Aksi Nyata Praktik Baik'
+  if (segmentMode === 'PRESET') {
+    const duration = Number(customChunkDuration) || 10
+    const totalChunks = Math.max(1, Math.ceil(60 / duration))
+
+    chunkSegments = Array.from({ length: totalChunks }, (_, idx) => {
+      const startMin = idx * duration
+      const endMin = (idx + 1) * duration
+      const titles = [
+        'Orientasi & Konsep Dasar Pembelajaran',
+        'Strategi Asesmen Formatif & Prompt AI',
+        'Studi Kasus & Pembelajaran Terdiferensiasi',
+        'Diskusi Interaktif & Tanya Jawab Pendidik',
+        'Tantangan Lapangan & Penyusunan Rubrik',
+        'Refleksi & Aksi Nyata Praktik Baik'
+      ]
+
+      return {
+        index: idx,
+        title: `Segmen ${idx + 1}: ${titles[idx % titles.length]} (${duration} Menit)`,
+        startTime: startMin * 60,
+        endTime: endMin * 60,
+        displayTime: `${formatTime(startMin)} - ${formatTime(endMin)}`,
+        summary: `Segmen durasi ${duration} menit mendalami ${titles[idx % titles.length]} secara terstruktur.`
+      }
+    })
+  } else {
+    // Mode CUSTOM: Segmen hasil buatan kustom pengguna
+    const savedForVideo = customSegmentsList[selectedVideo.id] || [
+      {
+        index: 0,
+        title: 'Segmen Kustom 1: Pembukaan & Paparan Utama',
+        startTime: 0,
+        endTime: 900, // 15 min
+        displayTime: '00:00 - 15:00',
+        summary: 'Segmen kustom durasi 15 menit awal hasil pilihan pengguna.'
+      },
+      {
+        index: 1,
+        title: 'Segmen Kustom 2: Sesi Tanya Jawab Pendidik',
+        startTime: 900,
+        endTime: 2100, // 35 min
+        displayTime: '15:00 - 35:00',
+        summary: 'Segmen kustom durasi 20 menit tanya jawab spesifik.'
+      }
     ]
+    chunkSegments = savedForVideo
+  }
 
-    return {
-      index: idx,
-      title: `Segmen ${idx + 1}: ${titles[idx % titles.length]}`,
-      startTime: startMin * 60, // seconds
-      endTime: endMin * 60,     // seconds
-      displayTime: `${formatTime(startMin)} - ${formatTime(endMin)}`,
-      summary: `Materi pokok segmen ${idx + 1} mendalami penerapan ${titles[idx % titles.length]} secara ringkas dan praktis.`
+  // Add New Custom Segment
+  const handleAddCustomSegment = (e) => {
+    e.preventDefault()
+    if (!customTitle.trim()) return
+
+    const startSec = Number(customStartMin) * 60
+    const endSec = Number(customEndMin) * 60
+
+    const newSegment = {
+      index: chunkSegments.length,
+      title: customTitle.trim(),
+      startTime: startSec,
+      endTime: endSec,
+      displayTime: `${formatTime(customStartMin)} - ${formatTime(customEndMin)}`,
+      summary: customSummary.trim() || `Segmen kustom (${customStartMin}-${customEndMin} Menit)`
     }
-  })
+
+    const updated = {
+      ...customSegmentsList,
+      [selectedVideo.id]: [...(customSegmentsList[selectedVideo.id] || []), newSegment]
+    }
+
+    setCustomSegmentsList(updated)
+    localStorage.setItem('bbgtk_user_custom_segments', JSON.stringify(updated))
+
+    setShowCustomModal(false)
+    setCustomTitle('')
+    setCustomStartMin(0)
+    setCustomEndMin(10)
+    setCustomSummary('')
+
+    alert('✅ Segmen Kustom Pilihan Anda Berhasil Ditambahkan!')
+  }
 
   // Handle Chunk Selection & xAPI Trace
   const handleSelectChunk = (chunk) => {
@@ -81,6 +156,7 @@ export default function VideoChunkingPage() {
         completion: true,
         extensions: {
           'https://sole.id/xapi/extensions/chunk_start': chunk.displayTime,
+          'https://sole.id/xapi/extensions/segment_mode': segmentMode,
           'https://sole.id/xapi/extensions/video_id': selectedVideo.youtubeId
         }
       }
@@ -93,11 +169,11 @@ export default function VideoChunkingPage() {
       ...userNotes,
       [`${selectedVideo.id}_${activeChunkIndex}`]: notes
     })
-    alert('✅ Catatan ringkasan segmen 10-menit berhasil disimpan!')
+    alert('✅ Catatan ringkasan segmen berhasil disimpan!')
   }
 
-  const activeChunk = chunkSegments[activeChunkIndex]
-  const videoSrc = `https://www.youtube.com/embed/${selectedVideo.youtubeId}?start=${activeChunk.startTime}&autoplay=1&rel=0`
+  const activeChunk = chunkSegments[activeChunkIndex] || chunkSegments[0]
+  const videoSrc = `https://www.youtube.com/embed/${selectedVideo.youtubeId}?start=${activeChunk?.startTime || 0}&autoplay=1&rel=0`
 
   return (
     <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen p-6 lg:p-10 space-y-8">
@@ -114,14 +190,14 @@ export default function VideoChunkingPage() {
                 Micro-Learning Feature
               </span>
               <span className="px-2.5 py-0.5 bg-emerald-500/10 text-emerald-600 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                Segmentasi Max 10 Menit
+                Segmentasi Pilihan Pengguna
               </span>
             </div>
             <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-              Reproduksi Video Chunking (Segmentasi 10 Menit)
+              Reproduksi Video Chunking & Segmentasi Kustom
             </h1>
             <p className="text-xs text-slate-500">
-              Pelajari webinar BBGTK secara bertahap dalam potongan topik 10-menit yang efisien dan fokus.
+              Pelajari webinar BBGTK dalam potongan topik 10-menit otomatis atau buat segmen durasi pilihan Anda sendiri.
             </p>
           </div>
         </div>
@@ -140,6 +216,70 @@ export default function VideoChunkingPage() {
         </button>
       </div>
 
+      {/* Segmentation Mode Switcher Menu Bar */}
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+            <span className="material-symbols-outlined text-sm text-primary">tune</span>
+            <span>Mode Segmentasi:</span>
+          </span>
+
+          <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+            <button
+              onClick={() => { setSegmentMode('PRESET'); setActiveChunkIndex(0); }}
+              className={`px-4 py-2 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                segmentMode === 'PRESET'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+              }`}
+            >
+              ⏱️ Otomatis ({customChunkDuration} Menit)
+            </button>
+
+            <button
+              onClick={() => { setSegmentMode('CUSTOM'); setActiveChunkIndex(0); }}
+              className={`px-4 py-2 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                segmentMode === 'CUSTOM'
+                  ? 'bg-purple-600 text-white shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+              }`}
+            >
+              🎨 Kustom Pilihan Pengguna
+            </button>
+          </div>
+        </div>
+
+        {/* Options based on mode */}
+        {segmentMode === 'PRESET' ? (
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-slate-500 font-bold">Durasi per Segmen:</span>
+            <div className="flex gap-1">
+              {[5, 10, 15, 20].map(dur => (
+                <button
+                  key={dur}
+                  onClick={() => setCustomChunkDuration(dur)}
+                  className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                    customChunkDuration === dur
+                      ? 'bg-emerald-500 text-white shadow'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {dur}m
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowCustomModal(true)}
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+          >
+            <span className="material-symbols-outlined text-sm">add_circle</span>
+            <span>+ Buat Segmen Kustom Baru</span>
+          </button>
+        )}
+      </div>
+
       {/* Main Video & Chunk Navigation Area */}
       <div className="grid lg:grid-cols-12 gap-8">
         
@@ -152,7 +292,7 @@ export default function VideoChunkingPage() {
               key={videoSrc}
               className="w-full h-full"
               src={videoSrc}
-              title={activeChunk.title}
+              title={activeChunk?.title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             ></iframe>
@@ -162,16 +302,18 @@ export default function VideoChunkingPage() {
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
               <div>
-                <span className="text-xs font-bold text-primary font-mono">{activeChunk.displayTime}</span>
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-0.5">{activeChunk.title}</h2>
+                <span className="text-xs font-bold text-primary font-mono">{activeChunk?.displayTime}</span>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-0.5">{activeChunk?.title}</h2>
               </div>
-              <span className="px-3 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 rounded-full font-bold text-xs">
-                Segmen {activeChunkIndex + 1} dari {totalChunks}
+              <span className={`px-3 py-1 rounded-full font-bold text-xs ${
+                segmentMode === 'CUSTOM' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+              }`}>
+                {segmentMode === 'CUSTOM' ? 'Segmen Kustom Pengguna' : `Segmen ${activeChunkIndex + 1} dari ${chunkSegments.length}`}
               </span>
             </div>
 
             <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              {activeChunk.summary}
+              {activeChunk?.summary}
             </p>
 
             {/* Note Taking Box */}
@@ -184,7 +326,7 @@ export default function VideoChunkingPage() {
                 rows="3"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Tuliskan poin penting / inspirasi yang Anda dapatkan di segmen 10-menit ini..."
+                placeholder="Tuliskan poin penting / inspirasi yang Anda dapatkan di segmen ini..."
                 className="w-full p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-2 focus:ring-primary"
               ></textarea>
               <div className="flex justify-end">
@@ -201,12 +343,12 @@ export default function VideoChunkingPage() {
 
         </div>
 
-        {/* Right Column: 10-Min Segments Navigation List */}
+        {/* Right Column: Segments Navigation List */}
         <div className="lg:col-span-4 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="material-symbols-outlined text-primary text-lg">segment</span>
-              <span>Daftar Segmen (Max 10-Min)</span>
+              <span>{segmentMode === 'CUSTOM' ? 'Daftar Segmen Kustom Saya' : 'Daftar Segmen Otomatis'}</span>
             </h3>
             <span className="text-xs text-slate-400">{chunkSegments.length} Segmen Topik</span>
           </div>
@@ -222,13 +364,13 @@ export default function VideoChunkingPage() {
                   onClick={() => handleSelectChunk(chunk)}
                   className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-start gap-3.5 ${
                     isActive
-                      ? 'bg-primary/10 border-2 border-primary shadow-sm'
+                      ? segmentMode === 'CUSTOM' ? 'bg-purple-500/10 border-2 border-purple-600 shadow-sm' : 'bg-primary/10 border-2 border-primary shadow-sm'
                       : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-primary/50'
                   }`}
                 >
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 font-bold text-xs ${
                     isActive
-                      ? 'bg-primary text-white shadow-md'
+                      ? segmentMode === 'CUSTOM' ? 'bg-purple-600 text-white shadow-md' : 'bg-primary text-white shadow-md'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
                   }`}>
                     {chunk.index + 1}
@@ -237,7 +379,7 @@ export default function VideoChunkingPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
                       <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
-                        isActive ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                        isActive ? segmentMode === 'CUSTOM' ? 'bg-purple-600 text-white' : 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
                       }`}>
                         {chunk.displayTime}
                       </span>
@@ -248,7 +390,7 @@ export default function VideoChunkingPage() {
                       )}
                     </div>
                     <h4 className={`text-xs font-bold leading-snug truncate ${
-                      isActive ? 'text-primary' : 'text-slate-900 dark:text-white'
+                      isActive ? segmentMode === 'CUSTOM' ? 'text-purple-600 dark:text-purple-400' : 'text-primary' : 'text-slate-900 dark:text-white'
                     }`}>
                       {chunk.title}
                     </h4>
@@ -265,7 +407,82 @@ export default function VideoChunkingPage() {
 
       </div>
 
-      {/* Modern Video Picker Modal with Live Search, Categories, & Pagination */}
+      {/* Modal Custom Segment Creator */}
+      {showCustomModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs animate-fade-in" onClick={() => setShowCustomModal(false)}>
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-200 dark:border-slate-800" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-purple-600 text-xl">add_circle</span>
+                <h3 className="font-bold text-base text-slate-900 dark:text-white">Tambah Segmen Kustom Pilihan Anda</h3>
+              </div>
+              <button onClick={() => setShowCustomModal(false)} className="text-slate-400 hover:text-slate-600 cursor-pointer">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleAddCustomSegment} className="space-y-4 text-xs">
+              <div>
+                <label className="font-bold block mb-1">Judul Topik Segmen:</label>
+                <input
+                  type="text"
+                  required
+                  value={customTitle}
+                  onChange={(e) => setCustomTitle(e.target.value)}
+                  placeholder="Misal: Sesi Tanya Jawab Pengalaman Lapangan Guru"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-purple-600 dark:text-white"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold block mb-1">Waktu Mulai (Menit):</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="180"
+                    required
+                    value={customStartMin}
+                    onChange={(e) => setCustomStartMin(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono focus:ring-2 focus:ring-purple-600 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold block mb-1">Waktu Selesai (Menit):</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="180"
+                    required
+                    value={customEndMin}
+                    onChange={(e) => setCustomEndMin(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono focus:ring-2 focus:ring-purple-600 dark:text-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold block mb-1">Ringkasan Topik Segmen:</label>
+                <textarea
+                  rows="2"
+                  value={customSummary}
+                  onChange={(e) => setCustomSummary(e.target.value)}
+                  placeholder="Poin pembahasan singkat dalam rentang menit ini..."
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-purple-600 dark:text-white"
+                ></textarea>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3">
+                <button type="button" onClick={() => setShowCustomModal(false)} className="px-4 py-2 border rounded-xl font-bold">Batal</button>
+                <button type="submit" className="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-md">Simpan Segmen</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modern Video Picker Modal */}
       {showPickerModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs animate-fade-in" onClick={() => setShowPickerModal(false)}>
           <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-4xl w-full p-6 md:p-8 space-y-6 shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
