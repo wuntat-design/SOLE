@@ -14,6 +14,7 @@ import RegisterPage from './pages/RegisterPage.jsx'
 import ModerationPage from './pages/ModerationPage.jsx'
 import UserManagementPage from './pages/UserManagementPage.jsx'
 import AdminDashboardPage from './pages/AdminDashboardPage.jsx'
+import LrsAnalyticsPage from './pages/LrsAnalyticsPage.jsx'
 import { useAuth } from './context/AuthContext'
 import { Navigate } from 'react-router-dom'
 import Chatbot from './components/Chatbot.jsx'
@@ -54,6 +55,7 @@ function App() {
               <Route path="/best-practice/:id" element={<BestPracticeDetailPage />} />
               <Route path="/moderation" element={<AdminOrModeratorRoute><ModerationPage /></AdminOrModeratorRoute>} />
               <Route path="/admin/dashboard" element={<AdminOrModeratorRoute><AdminDashboardPage /></AdminOrModeratorRoute>} />
+              <Route path="/lrs/analytics" element={<AdminOrModeratorRoute><LrsAnalyticsPage /></AdminOrModeratorRoute>} />
               <Route path="/profile" element={<UserProfilePage />} />
               <Route path="/settings" element={<SuperAdminRoute><UserManagementPage /></SuperAdminRoute>} />
             </Routes>

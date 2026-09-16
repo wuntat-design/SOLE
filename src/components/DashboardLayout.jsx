@@ -88,6 +88,13 @@ export default function DashboardLayout({ children }) {
                   <span className={`text-sm ${path === '/admin/dashboard' ? 'font-semibold' : 'font-medium'}`}>Dashboard Pengguna</span>
                 </Link>
                 <Link 
+                  to="/lrs/analytics" 
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group ${path === '/lrs/analytics' ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+                >
+                  <span className={`material-symbols-outlined ${path === '/lrs/analytics' ? 'fill-1' : 'text-slate-500 group-hover:text-primary'}`}>database</span>
+                  <span className={`text-sm ${path === '/lrs/analytics' ? 'font-semibold' : 'font-medium'}`}>LRS Analytics (xAPI)</span>
+                </Link>
+                <Link 
                   to="/moderation" 
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group ${path === '/moderation' ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
                 >
@@ -152,7 +159,7 @@ export default function DashboardLayout({ children }) {
               <span className="material-symbols-outlined">{isSidebarOpen ? 'menu_open' : 'menu'}</span>
             </button>
             <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-slate-100 truncate max-w-[180px] sm:max-w-none">
-              {path === '/admin/dashboard' ? 'Dashboard Pengguna & Log' : path === '/moderation' ? 'Moderasi Konten' : path.startsWith('/settings') ? 'Kelola Role' : path.startsWith('/best-practice') ? 'Best Practice Gallery' : path === '/webinar' ? 'Perpustakaan Webinar' : 'Dashboard Utama'}
+              {path === '/lrs/analytics' ? 'LRS Store & Analytics (xAPI)' : path === '/admin/dashboard' ? 'Dashboard Pengguna & Log' : path === '/moderation' ? 'Moderasi Konten' : path.startsWith('/settings') ? 'Kelola Role' : path.startsWith('/best-practice') ? 'Best Practice Gallery' : path === '/webinar' ? 'Perpustakaan Webinar' : 'Dashboard Utama'}
             </h2>
           </div>
           <div className="flex items-center gap-4">
